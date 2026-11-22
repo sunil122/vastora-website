@@ -66,6 +66,31 @@ a:focus-visible,button:focus-visible{outline:2px solid #765B3D;outline-offset:3p
 @keyframes product-zoom{from{transform:scale(1.13)}to{transform:scale(1.035)}}
 @media(max-width:680px){.product-dialog{padding:10px}.product-dialog-panel{grid-template-columns:1fr;max-height:94vh}.product-dialog-image{min-height:260px;height:260px}.product-dialog-image img{min-height:260px}.product-dialog-copy{padding:27px}.product-dialog-copy h2{font-size:42px}.product-more-dialog{padding:10px}.product-more-panel{max-height:94vh;padding:30px 24px}.product-more-panel h2{font-size:46px}.product-more-grid{grid-template-columns:1fr 1fr}.product-more-item{padding:15px 12px}}
 @media(prefers-reduced-motion:reduce){.product-dialog-image img{animation:none}}
+
+/* Selectable product finish previews */
+.variant-picker{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:14px 0 2px}
+.variant-picker-label{flex:0 0 100%;font-size:7px;letter-spacing:.14em;text-transform:uppercase;color:#625C52;margin-bottom:2px}
+.variant-swatch{position:relative;width:25px;height:25px;padding:0;border:1px solid #8e8577;border-radius:50%;cursor:pointer;background:var(--swatch,#ddd);box-shadow:inset 0 0 0 2px #F0ECE3}
+.variant-swatch[aria-pressed="true"]{outline:1px solid #29251F;outline-offset:3px}
+.variant-swatch:focus-visible{outline:2px solid #765B3D;outline-offset:4px}
+.variant-swatch::after{content:attr(data-label);position:absolute;left:50%;bottom:calc(100% + 8px);transform:translate(-50%,4px);padding:5px 7px;background:#29251F;color:#F8F5EE;font:8px var(--sans);white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:4}
+.variant-swatch:hover::after,.variant-swatch:focus-visible::after{opacity:1;transform:translate(-50%,0)}
+.variant-swatch.pattern{border-radius:3px}
+.variant-swatch[data-variant="marble"]{background:linear-gradient(135deg,#eee9df 0 34%,#aaa49a 35% 37%,#e8e2d8 38% 62%,#b6aea2 63% 65%,#f3eee5 66%)}
+.variant-swatch[data-variant="ribbed"]{background:repeating-linear-gradient(90deg,#c7bba9 0 3px,#eee8dc 3px 6px)}
+.variant-swatch[data-variant="woven"]{background:repeating-linear-gradient(45deg,#c7bba9 0 2px,#eee8dc 2px 4px)}
+.photo .variant-overlay,.product-dialog-image .variant-overlay{position:absolute;inset:0;pointer-events:none;opacity:0;mix-blend-mode:soft-light;z-index:1}
+.photo .variant-overlay[data-variant="marble"],.product-dialog-image .variant-overlay[data-variant="marble"]{opacity:.42;background:repeating-linear-gradient(132deg,transparent 0 35px,#817b72 36px,#f7f2e9 38px,transparent 42px),linear-gradient(45deg,#e8e1d5aa,#b8b0a4aa)}
+.photo .variant-overlay[data-variant="ribbed"],.product-dialog-image .variant-overlay[data-variant="ribbed"]{opacity:.28;background:repeating-linear-gradient(90deg,#554b3f 0 2px,transparent 2px 8px)}
+.photo .variant-overlay[data-variant="woven"],.product-dialog-image .variant-overlay[data-variant="woven"]{opacity:.32;background:repeating-linear-gradient(45deg,#554b3f 0 1px,transparent 1px 5px),repeating-linear-gradient(-45deg,#554b3f 0 1px,transparent 1px 5px)}
+.photo img,.product-dialog-image img{transition:filter .3s,transform .65s}
+.product-dialog-image{position:relative}
+.product-dialog-image .variant-overlay{z-index:1}
+.product-dialog-copy .variant-picker{margin:18px 0 6px}
+.product-dialog-copy .variant-picker-label{font-size:8px}
+.product-dialog-copy .variant-swatch{width:30px;height:30px}
+@media(max-width:650px){.variant-picker{gap:6px;margin:12px 0}.variant-swatch{width:23px;height:23px}}
+
 </style>
 </head>
 <body>
@@ -138,13 +163,53 @@ renderProducts();
 
 const quickDialog=document.createElement('div');
 quickDialog.className='product-dialog';
-quickDialog.innerHTML='<div class="product-dialog-panel" role="dialog" aria-modal="true" aria-labelledby="quick-product-title"><button class="product-dialog-close quick-close" type="button" aria-label="Close quick view">×</button><div class="product-dialog-image"><img alt=""></div><div class="product-dialog-copy"><div class="eyebrow">Vastora · Quick view</div><div class="product-dialog-category"></div><h2 id="quick-product-title"></h2><p class="product-dialog-description"></p><div class="product-dialog-note">A closer look at the selected piece. Explore the full collection information for material, finish and sizing enquiries.</div><div class="product-dialog-actions"><button type="button" class="more-details-button">More details ↗</button><a class="quick-enquire" href="#">Enquire ↗</a></div></div></div>';
+quickDialog.innerHTML='<div class="product-dialog-panel" role="dialog" aria-modal="true" aria-labelledby="quick-product-title"><button class="product-dialog-close quick-close" type="button" aria-label="Close quick view">×</button><div class="product-dialog-image"><img alt=""></div><div class="product-dialog-copy"><div class="eyebrow">Vastora · Quick view</div><div class="product-dialog-category"></div><h2 id="quick-product-title"></h2><p class="product-dialog-description"></p><div class="quick-variant-mount"></div><div class="product-dialog-note">A closer look at the selected piece. Explore the full collection information for material, finish and sizing enquiries.</div><div class="product-dialog-actions"><button type="button" class="more-details-button">More details ↗</button><a class="quick-enquire" href="#">Enquire ↗</a></div></div></div>';
 document.body.append(quickDialog);
 const moreDialog=document.createElement('div');
 moreDialog.className='product-more-dialog';
-moreDialog.innerHTML='<div class="product-more-panel" role="dialog" aria-modal="true" aria-labelledby="more-product-title"><button class="product-dialog-close more-close" type="button" aria-label="Close detailed information">×</button><div class="eyebrow">Vastora · Collection information</div><h2 id="more-product-title"></h2><p class="more-description"></p><div class="product-more-grid"><div class="product-more-item"><b>Materials</b><span>Ask us about available materials, upholstery, surface choices and construction.</span></div><div class="product-more-item"><b>Finishes</b><span>Explore tones, textures, colours and finish options for your space.</span></div><div class="product-more-item"><b>Dimensions</b><span>Request dimensions, proportions and room-planning guidance for the selected piece.</span></div><div class="product-more-item"><b>Personalisation</b><span>Discuss configurations, custom requirements and coordinating pieces.</span></div></div><div class="product-more-foot">Product specifications, supplier options, pricing, lead times and availability are confirmed individually by the Vastora team. This catalogue is an introduction to the collection, not a live inventory.</div><div class="product-more-actions"><a class="more-enquire" href="#">Enquire about this piece ↗</a><button type="button" class="back-to-quick">Back to quick view</button></div></div>';
+moreDialog.innerHTML='<div class="product-more-panel" role="dialog" aria-modal="true" aria-labelledby="more-product-title"><button class="product-dialog-close more-close" type="button" aria-label="Close detailed information">×</button><div class="eyebrow">Vastora · Collection information</div><h2 id="more-product-title"></h2><p class="more-description"></p><p class="more-selected-finish" style="font-size:10px;color:#625C52;letter-spacing:.08em;text-transform:uppercase"></p><div class="product-more-grid"><div class="product-more-item"><b>Materials</b><span>Ask us about available materials, upholstery, surface choices and construction.</span></div><div class="product-more-item"><b>Finishes</b><span>Explore tones, textures, colours and finish options for your space.</span></div><div class="product-more-item"><b>Dimensions</b><span>Request dimensions, proportions and room-planning guidance for the selected piece.</span></div><div class="product-more-item"><b>Personalisation</b><span>Discuss configurations, custom requirements and coordinating pieces.</span></div></div><div class="product-more-foot">Product specifications, supplier options, pricing, lead times and availability are confirmed individually by the Vastora team. This catalogue is an introduction to the collection, not a live inventory.</div><div class="product-more-actions"><a class="more-enquire" href="#">Enquire about this piece ↗</a><button type="button" class="back-to-quick">Back to quick view</button></div></div>';
 document.body.append(moreDialog);
 let activeProduct=null,lastQuickTrigger=null;
+const finishOptions=[
+ {id:'natural',label:'Natural',color:'#d8cbb7',filter:'none',type:'colour'},
+ {id:'ivory',label:'Ivory',color:'#eee9df',filter:'brightness(1.13) saturate(.62)',type:'colour'},
+ {id:'sand',label:'Sand',color:'#c9b69b',filter:'sepia(.22) saturate(.78) brightness(1.04)',type:'colour'},
+ {id:'taupe',label:'Taupe',color:'#978777',filter:'sepia(.28) saturate(.58) brightness(.86)',type:'colour'},
+ {id:'walnut',label:'Walnut',color:'#79543a',filter:'sepia(.68) saturate(1.1) brightness(.78)',type:'colour'},
+ {id:'charcoal',label:'Charcoal',color:'#383633',filter:'grayscale(.72) brightness(.68)',type:'colour'},
+ {id:'sage',label:'Sage',color:'#879080',filter:'sepia(.25) hue-rotate(48deg) saturate(.62) brightness(.9)',type:'colour'},
+ {id:'champagne',label:'Champagne',color:'#b5a080',filter:'sepia(.38) saturate(.78) brightness(1.05)',type:'colour'},
+ {id:'marble',label:'Marble',type:'pattern'},
+ {id:'ribbed',label:'Ribbed',type:'pattern'},
+ {id:'woven',label:'Woven',type:'pattern'}
+];
+function makeFinishPicker(selected='natural',onSelect=()=>{}){
+ const wrap=document.createElement('div');wrap.className='variant-picker';
+ const label=document.createElement('span');label.className='variant-picker-label';label.textContent='Choose a colour or pattern';wrap.append(label);
+ finishOptions.forEach(option=>{
+  const b=document.createElement('button');b.type='button';b.className='variant-swatch'+(option.type==='pattern'?' pattern':'');b.dataset.variant=option.id;b.dataset.label=option.label;b.setAttribute('aria-label','Preview '+option.label);b.setAttribute('aria-pressed',String(option.id===selected));
+  if(option.color)b.style.setProperty('--swatch',option.color);
+  b.addEventListener('click',()=>{wrap.querySelectorAll('.variant-swatch').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));onSelect(option)});
+  wrap.append(b);
+ });
+ return wrap;
+}
+function applyFinish(card,option,modal=false){
+ const image=card.querySelector('img');
+ if(image){const colour=finishOptions.find(x=>x.id===option.id);image.style.filter=colour&&colour.filter?colour.filter:'none'}
+ let overlay=card.querySelector('.variant-overlay');
+ if(!overlay){overlay=document.createElement('span');overlay.className='variant-overlay';card.append(overlay)}
+ overlay.dataset.variant=option.type==='pattern'?option.id:'';
+ if(modal){
+  const modalImage=quickDialog.querySelector('.product-dialog-image img');
+  modalImage.style.filter=option.filter||'none';
+  let modalOverlay=quickDialog.querySelector('.product-dialog-image .variant-overlay');
+  if(!modalOverlay){modalOverlay=document.createElement('span');modalOverlay.className='variant-overlay';quickDialog.querySelector('.product-dialog-image').append(modalOverlay)}
+  modalOverlay.dataset.variant=option.type==='pattern'?option.id:'';
+ }
+ activeProduct.finish=option.label;
+ moreDialog.querySelector('.more-selected-finish').textContent='Selected preview: '+option.label;
+}
 const quickClose=quickDialog.querySelector('.quick-close'),moreClose=moreDialog.querySelector('.more-close');
 const closeMore=()=>{moreDialog.classList.remove('is-open');quickDialog.classList.add('is-open');quickDialog.querySelector('.more-details-button').focus()};
 const closeQuick=()=>{moreDialog.classList.remove('is-open');quickDialog.classList.remove('is-open');document.body.style.overflow='';if(lastQuickTrigger)lastQuickTrigger.focus()};
@@ -164,10 +229,16 @@ const openQuick=(card,trigger)=>{
  quickDialog.querySelector('.product-dialog-category').textContent=activeProduct.category+' collection';
  quickDialog.querySelector('#quick-product-title').textContent=activeProduct.title;
  quickDialog.querySelector('.product-dialog-description').textContent=activeProduct.description;
+ const currentFinish=card.dataset.finish||'natural';
+ const quickMount=quickDialog.querySelector('.quick-variant-mount');quickMount.replaceChildren();
+ quickMount.append(makeFinishPicker(currentFinish,option=>{card.dataset.finish=option.id;applyFinish(card.querySelector('.photo'),option,true)}));
+ const chosen=finishOptions.find(x=>x.id===currentFinish)||finishOptions[0];
+ applyFinish(card.querySelector('.photo'),chosen,true);
  const enquiry='mailto:hello@vastoraliving.com?subject='+encodeURIComponent('Vastora product enquiry - '+activeProduct.title);
  quickDialog.querySelector('.quick-enquire').href=enquiry;
  moreDialog.querySelector('#more-product-title').textContent=activeProduct.title;
  moreDialog.querySelector('.more-description').textContent=activeProduct.description+' Discover the available options with the Vastora team and find the right expression for your project.';
+ moreDialog.querySelector('.more-selected-finish').textContent='Selected preview: '+(activeProduct.finish||'Natural');
  moreDialog.querySelector('.more-enquire').href=enquiry;
  moreDialog.classList.remove('is-open');quickDialog.classList.add('is-open');document.body.style.overflow='hidden';quickClose.focus();
 };
@@ -175,6 +246,9 @@ products.forEach(card=>{
  const info=card.querySelector('.product-info'),photo=card.querySelector('.photo');
  if(!info||!photo)return;
  const trigger=document.createElement('button');trigger.type='button';trigger.className='product-detail-trigger';trigger.textContent='Quick view ↗';trigger.addEventListener('click',()=>openQuick(card,trigger));
+ const description=info.querySelector('p');
+ const picker=makeFinishPicker('natural',option=>{card.dataset.finish=option.id;applyFinish(photo,option,false)});
+ info.insertBefore(picker,description?description.nextSibling:null);
  const enquiry=info.querySelector('.product-link');info.insertBefore(trigger,enquiry||null);
  photo.setAttribute('role','button');photo.setAttribute('tabindex','0');photo.setAttribute('aria-label','Zoom in and preview '+(card.querySelector('h3')?.textContent||'product'));
  photo.addEventListener('click',()=>openQuick(card,photo));
