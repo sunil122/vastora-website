@@ -53,8 +53,9 @@ const productDetails={
  shelving:{name:'Designer Display Shelving',image:'https://images.unsplash.com/photo-1594620302200-9a762244a156?auto=format&fit=crop&w=900&q=85',specs:['Custom storage layout','Premium finish options','Integrated lighting option']}
 };
 const baseZoom=window.matchMedia('(max-width:760px)').matches?1.18:1.42;
-let activeRoom='living',activeItem='sofa',zoom=baseZoom,rotation=0,selectedStyle=0,selectedColor=0;\nrenderTransform();
+let activeRoom='living',activeItem='sofa',zoom=baseZoom,rotation=0,selectedStyle=0,selectedColor=0;
 const photo=document.getElementById('roomPhoto'),panel=document.getElementById('panel'),status=document.getElementById('status');
+renderTransform();
 function setRoom(key){activeRoom=key;resetHotspotZoom();photo.src=rooms[key].image;photo.alt='Photorealistic '+rooms[key].label;document.querySelectorAll('.room-choice').forEach(b=>b.classList.toggle('active',b.dataset.room===key));document.getElementById('walkRoomName').textContent=rooms[key].label;document.querySelectorAll('.hotspot').forEach(b=>b.style.display='block');document.getElementById('panelTitle').textContent=rooms[key].label+' collection';panel.classList.remove('open');status.textContent=rooms[key].label+' · choose a gold hotspot to customise';zoom=baseZoom;rotation=0;renderTransform()}
 function renderTransform(){photo.style.transform='scale('+zoom+') rotate('+rotation+'deg)';document.getElementById('zoomValue').textContent=Math.round(zoom*100)+'%'}
 function resetHotspotZoom(){document.getElementById('stage').classList.remove('zoomed');document.querySelectorAll('.hotspot').forEach(b=>b.classList.remove('active'));photo.style.transformOrigin='center center';zoom=baseZoom;rotation=0;renderTransform()}
