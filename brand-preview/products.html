@@ -28,25 +28,44 @@ a:focus-visible,button:focus-visible{outline:2px solid #765B3D;outline-offset:3p
 @media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.intro{display:block}.intro p{margin-top:18px}.cta{align-items:flex-start;flex-direction:column}}
 @media(max-width:650px){header{height:70px;padding:0 6vw}.brandword{font-size:12px}.menu{display:block}nav{display:none;position:absolute;top:70px;left:0;right:0;padding:22px 7vw 28px;background:var(--paper);border-bottom:1px solid #29251F22;flex-direction:column;align-items:flex-start}nav.open{display:flex}nav a{font-size:10px}.hero{min-height:390px;padding:65px 7vw 55px;background-position:60% center}.hero h1{font-size:58px}.intro{padding:55px 7vw 30px}.filters{padding:0 7vw 25px;gap:7px}.filter{padding:10px 12px;font-size:7px}.grid{padding:0 7vw 22px;grid-template-columns:repeat(2,minmax(0,1fr));gap:25px 10px}.pagination{padding:0 7vw 55px;gap:6px;justify-content:center;flex-wrap:wrap}.page-controls{gap:5px}.page-status{flex:0 0 100%;order:2;text-align:center;white-space:normal;margin-top:5px}.page-btn{min-width:34px;height:36px;padding:0 9px}.product h3{font-size:22px}.product p{font-size:10px}.product-meta{font-size:7px;letter-spacing:.08em}.product-link{font-size:7px}.note{margin:0 7vw 60px;padding:18px}.cta{padding:60px 7vw}footer{padding:25px 7vw;display:block;line-height:2}}
 
-/* Product detail experience */
+/* Two-step product experience: quick zoom, then a separate detailed overlay */
 .product-link{margin-right:14px}
 .product-detail-trigger{display:inline-block;margin-top:14px;padding:0 0 6px;border:0;border-bottom:1px solid #9A7955;background:none;color:#51412F;font-size:8px;letter-spacing:.15em;text-transform:uppercase;cursor:pointer}
 .product-detail-trigger:hover{color:#927451;border-color:#927451}
-.product-dialog{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:24px;background:#171612B8;backdrop-filter:blur(5px)}
+.photo{cursor:zoom-in}
+.photo:focus-visible{outline:2px solid #8A6846;outline-offset:4px}
+.product-dialog{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:24px;background:#171612C7;backdrop-filter:blur(7px)}
 .product-dialog.is-open{display:flex}
-.product-dialog-panel{position:relative;display:grid;grid-template-columns:1fr 1fr;width:min(960px,100%);max-height:min(700px,90vh);overflow:auto;background:#F0ECE3;color:#29251F;box-shadow:0 25px 90px #0005}
-.product-dialog-image{min-height:520px;background:#D5CABB}
-.product-dialog-image img{width:100%;height:100%;object-fit:cover;display:block}
+.product-dialog-panel{position:relative;display:grid;grid-template-columns:1.12fr .88fr;width:min(1050px,100%);max-height:min(760px,92vh);overflow:auto;background:#F0ECE3;color:#29251F;box-shadow:0 28px 100px #0007}
+.product-dialog-image{min-height:540px;background:#D5CABB;overflow:hidden}
+.product-dialog-image img{width:100%;height:100%;min-height:540px;object-fit:cover;display:block;transform:scale(1.035);animation:product-zoom .8s cubic-bezier(.2,.65,.2,1) both}
 .product-dialog-copy{padding:clamp(28px,5vw,64px);display:flex;flex-direction:column;justify-content:center}
 .product-dialog-copy .eyebrow{color:#8B755A}
 .product-dialog-copy h2{font:clamp(38px,5vw,58px)/1 var(--serif);font-weight:400;margin:17px 0}
 .product-dialog-copy p{font-size:12px;line-height:1.9;color:#5F594F}
-.product-dialog-note{margin:18px 0 28px;padding-top:17px;border-top:1px solid #29251F25;font-size:10px;line-height:1.8;color:#625C52}
+.product-dialog-category{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:#81745F}
+.product-dialog-note{margin:18px 0 26px;padding-top:17px;border-top:1px solid #29251F25;font-size:10px;line-height:1.8;color:#625C52}
 .product-dialog-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-.product-dialog-actions a{display:inline-flex;padding:14px 18px;background:#29251F;color:#F8F5EE;font-size:8px;letter-spacing:.14em;text-transform:uppercase}
-.product-dialog-close{position:absolute;right:14px;top:14px;width:38px;height:38px;border:1px solid #29251F55;background:#F0ECE3;color:#29251F;font-size:22px;cursor:pointer}
-@media(max-width:680px){.product-dialog{padding:12px}.product-dialog-panel{grid-template-columns:1fr;max-height:92vh}.product-dialog-image{min-height:250px;height:250px}.product-dialog-copy{padding:28px}.product-dialog-copy h2{font-size:42px}}
-@media(prefers-reduced-motion:no-preference){.product-dialog-panel{animation:detail-in .35s ease both}@keyframes detail-in{from{opacity:0;transform:translateY(14px) scale(.99)}to{opacity:1;transform:none}}}
+.product-dialog-actions a,.product-dialog-actions button{display:inline-flex;align-items:center;justify-content:center;padding:14px 18px;background:#29251F;color:#F8F5EE;border:1px solid #29251F;font:8px var(--sans);letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+.product-dialog-actions .secondary-action{background:transparent;color:#29251F}
+.product-dialog-close{position:absolute;right:14px;top:14px;z-index:2;width:40px;height:40px;border:1px solid #29251F55;background:#F0ECE3;color:#29251F;font-size:22px;cursor:pointer}
+.product-more-dialog{position:fixed;inset:0;z-index:120;display:none;align-items:center;justify-content:center;padding:22px;background:#171612D9;backdrop-filter:blur(9px)}
+.product-more-dialog.is-open{display:flex}
+.product-more-panel{position:relative;width:min(820px,100%);max-height:90vh;overflow:auto;background:#F0ECE3;padding:clamp(30px,6vw,72px);box-shadow:0 30px 110px #0008}
+.product-more-panel .eyebrow{color:#8B755A}
+.product-more-panel h2{font:clamp(42px,6vw,68px)/.98 var(--serif);font-weight:400;margin:18px 50px 18px 0}
+.product-more-panel>p{max-width:650px;font-size:13px;line-height:2;color:#5F594F}
+.product-more-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#D5CABB;border:1px solid #D5CABB;margin:28px 0}
+.product-more-item{background:#F8F5EE;padding:20px}
+.product-more-item b{display:block;font:22px var(--serif);font-weight:400;margin-bottom:7px}
+.product-more-item span{font-size:10px;line-height:1.8;color:#625C52}
+.product-more-foot{font-size:10px;line-height:1.9;color:#625C52;border-top:1px solid #29251F25;padding-top:20px}
+.product-more-actions{margin-top:24px;display:flex;gap:12px;flex-wrap:wrap}
+.product-more-actions a{display:inline-flex;padding:14px 19px;background:#29251F;color:#F8F5EE;font-size:8px;letter-spacing:.14em;text-transform:uppercase}
+.product-more-actions button{padding:14px 19px;background:transparent;border:1px solid #9A7955;color:#29251F;font:8px var(--sans);letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+@keyframes product-zoom{from{transform:scale(1.13)}to{transform:scale(1.035)}}
+@media(max-width:680px){.product-dialog{padding:10px}.product-dialog-panel{grid-template-columns:1fr;max-height:94vh}.product-dialog-image{min-height:260px;height:260px}.product-dialog-image img{min-height:260px}.product-dialog-copy{padding:27px}.product-dialog-copy h2{font-size:42px}.product-more-dialog{padding:10px}.product-more-panel{max-height:94vh;padding:30px 24px}.product-more-panel h2{font-size:46px}.product-more-grid{grid-template-columns:1fr 1fr}.product-more-item{padding:15px 12px}}
+@media(prefers-reduced-motion:reduce){.product-dialog-image img{animation:none}}
 </style>
 </head>
 <body>
@@ -117,31 +136,51 @@ function renderProducts(){
 filters.forEach(button=>button.addEventListener('click',()=>{activeFilter=button.dataset.filter;currentPage=1;filters.forEach(b=>b.setAttribute('aria-pressed',String(b===button)));renderProducts()}));
 renderProducts();
 
-const detailDialog=document.createElement('div');
-detailDialog.className='product-dialog';
-detailDialog.innerHTML='<div class="product-dialog-panel" role="dialog" aria-modal="true" aria-labelledby="product-dialog-title"><button class="product-dialog-close" type="button" aria-label="Close product details">×</button><div class="product-dialog-image"><img alt=""></div><div class="product-dialog-copy"><div class="eyebrow">Vastora · Collection details</div><h2 id="product-dialog-title"></h2><p class="product-dialog-description"></p><div class="product-dialog-note">Materials, finishes, dimensions, customization and availability are confirmed individually for each selected collection.</div><div class="product-dialog-actions"><a class="product-dialog-enquire" href="#">Enquire about this collection ↗</a></div></div></div>';
-document.body.append(detailDialog);
-const closeDetail=()=>{detailDialog.classList.remove('is-open');document.body.style.overflow='';if(lastDetailTrigger)lastDetailTrigger.focus()};
-let lastDetailTrigger=null;
-const closeButton=detailDialog.querySelector('.product-dialog-close');
-closeButton.addEventListener('click',closeDetail);
-detailDialog.addEventListener('click',event=>{if(event.target===detailDialog)closeDetail()});
-document.addEventListener('keydown',event=>{if(event.key==='Escape'&&detailDialog.classList.contains('is-open'))closeDetail()});
+const quickDialog=document.createElement('div');
+quickDialog.className='product-dialog';
+quickDialog.innerHTML='<div class="product-dialog-panel" role="dialog" aria-modal="true" aria-labelledby="quick-product-title"><button class="product-dialog-close quick-close" type="button" aria-label="Close quick view">×</button><div class="product-dialog-image"><img alt=""></div><div class="product-dialog-copy"><div class="eyebrow">Vastora · Quick view</div><div class="product-dialog-category"></div><h2 id="quick-product-title"></h2><p class="product-dialog-description"></p><div class="product-dialog-note">A closer look at the selected piece. Explore the full collection information for material, finish and sizing enquiries.</div><div class="product-dialog-actions"><button type="button" class="more-details-button">More details ↗</button><a class="quick-enquire" href="#">Enquire ↗</a></div></div></div>';
+document.body.append(quickDialog);
+const moreDialog=document.createElement('div');
+moreDialog.className='product-more-dialog';
+moreDialog.innerHTML='<div class="product-more-panel" role="dialog" aria-modal="true" aria-labelledby="more-product-title"><button class="product-dialog-close more-close" type="button" aria-label="Close detailed information">×</button><div class="eyebrow">Vastora · Collection information</div><h2 id="more-product-title"></h2><p class="more-description"></p><div class="product-more-grid"><div class="product-more-item"><b>Materials</b><span>Ask us about available materials, upholstery, surface choices and construction.</span></div><div class="product-more-item"><b>Finishes</b><span>Explore tones, textures, colours and finish options for your space.</span></div><div class="product-more-item"><b>Dimensions</b><span>Request dimensions, proportions and room-planning guidance for the selected piece.</span></div><div class="product-more-item"><b>Personalisation</b><span>Discuss configurations, custom requirements and coordinating pieces.</span></div></div><div class="product-more-foot">Product specifications, supplier options, pricing, lead times and availability are confirmed individually by the Vastora team. This catalogue is an introduction to the collection, not a live inventory.</div><div class="product-more-actions"><a class="more-enquire" href="#">Enquire about this piece ↗</a><button type="button" class="back-to-quick">Back to quick view</button></div></div>';
+document.body.append(moreDialog);
+let activeProduct=null,lastQuickTrigger=null;
+const quickClose=quickDialog.querySelector('.quick-close'),moreClose=moreDialog.querySelector('.more-close');
+const closeMore=()=>{moreDialog.classList.remove('is-open');quickDialog.classList.add('is-open');quickDialog.querySelector('.more-details-button').focus()};
+const closeQuick=()=>{moreDialog.classList.remove('is-open');quickDialog.classList.remove('is-open');document.body.style.overflow='';if(lastQuickTrigger)lastQuickTrigger.focus()};
+quickClose.addEventListener('click',closeQuick);
+moreClose.addEventListener('click',closeMore);
+moreDialog.querySelector('.back-to-quick').addEventListener('click',closeMore);
+quickDialog.addEventListener('click',event=>{if(event.target===quickDialog)closeQuick()});
+moreDialog.addEventListener('click',event=>{if(event.target===moreDialog)closeMore()});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'){if(moreDialog.classList.contains('is-open'))closeMore();else if(quickDialog.classList.contains('is-open'))closeQuick()}});
+const openQuick=(card,trigger)=>{
+ const title=card.querySelector('h3'),description=card.querySelector('.product-info p'),img=card.querySelector('.photo img'),category=card.querySelector('.product-meta span');
+ if(!title||!description||!img)return;
+ activeProduct={title:title.textContent,description:description.textContent,src:img.currentSrc||img.src,alt:img.alt,category:category?category.textContent:card.dataset.category};
+ lastQuickTrigger=trigger;
+ quickDialog.querySelector('.product-dialog-image img').src=activeProduct.src;
+ quickDialog.querySelector('.product-dialog-image img').alt=activeProduct.alt;
+ quickDialog.querySelector('.product-dialog-category').textContent=activeProduct.category+' collection';
+ quickDialog.querySelector('#quick-product-title').textContent=activeProduct.title;
+ quickDialog.querySelector('.product-dialog-description').textContent=activeProduct.description;
+ const enquiry='mailto:hello@vastoraliving.com?subject='+encodeURIComponent('Vastora product enquiry - '+activeProduct.title);
+ quickDialog.querySelector('.quick-enquire').href=enquiry;
+ moreDialog.querySelector('#more-product-title').textContent=activeProduct.title;
+ moreDialog.querySelector('.more-description').textContent=activeProduct.description+' Discover the available options with the Vastora team and find the right expression for your project.';
+ moreDialog.querySelector('.more-enquire').href=enquiry;
+ moreDialog.classList.remove('is-open');quickDialog.classList.add('is-open');document.body.style.overflow='hidden';quickClose.focus();
+};
 products.forEach(card=>{
- const info=card.querySelector('.product-info'),title=card.querySelector('h3'),description=card.querySelector('.product-info p'),img=card.querySelector('.photo img');
- if(!info||!title||!description||!img)return;
- const trigger=document.createElement('button');trigger.type='button';trigger.className='product-detail-trigger';trigger.textContent='View details ↗';
- trigger.addEventListener('click',()=>{
-  lastDetailTrigger=trigger;
-  detailDialog.querySelector('.product-dialog-image img').src=img.currentSrc||img.src;
-  detailDialog.querySelector('.product-dialog-image img').alt=img.alt;
-  detailDialog.querySelector('#product-dialog-title').textContent=title.textContent;
-  detailDialog.querySelector('.product-dialog-description').textContent=description.textContent;
-  detailDialog.querySelector('.product-dialog-enquire').href='mailto:hello@vastoraliving.com?subject='+encodeURIComponent('Vastora product enquiry - '+title.textContent);
-  detailDialog.classList.add('is-open');document.body.style.overflow='hidden';closeButton.focus();
- });
+ const info=card.querySelector('.product-info'),photo=card.querySelector('.photo');
+ if(!info||!photo)return;
+ const trigger=document.createElement('button');trigger.type='button';trigger.className='product-detail-trigger';trigger.textContent='Quick view ↗';trigger.addEventListener('click',()=>openQuick(card,trigger));
  const enquiry=info.querySelector('.product-link');info.insertBefore(trigger,enquiry||null);
+ photo.setAttribute('role','button');photo.setAttribute('tabindex','0');photo.setAttribute('aria-label','Zoom in and preview '+(card.querySelector('h3')?.textContent||'product'));
+ photo.addEventListener('click',()=>openQuick(card,photo));
+ photo.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();openQuick(card,photo)}});
 });
+quickDialog.querySelector('.more-details-button').addEventListener('click',()=>{if(!activeProduct)return;quickDialog.classList.remove('is-open');moreDialog.classList.add('is-open');moreClose.focus()});
 
 (()=>{const nav=document.getElementById("primary-navigation"),menu=document.querySelector(".menu");if(!nav||!menu)return;nav.addEventListener("click",e=>{if(e.target.closest("a")){nav.classList.remove("open");menu.setAttribute("aria-expanded","false");menu.setAttribute("aria-label","Open navigation")}});document.addEventListener("keydown",e=>{if(e.key==="Escape"&&nav.classList.contains("open")){nav.classList.remove("open");menu.setAttribute("aria-expanded","false");menu.setAttribute("aria-label","Open navigation");menu.focus()}})})();
 </script>
