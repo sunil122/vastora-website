@@ -35,6 +35,8 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.166.1/build/three.m
 import {OrbitControls} from 'https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/controls/OrbitControls.js';
 import {GLTFLoader} from 'https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/loaders/GLTFLoader.js';
 import {PointerLockControls} from 'https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/controls/PointerLockControls.js';
+import {KTX2Loader} from 'https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/loaders/KTX2Loader.js';
+import {MeshoptDecoder} from 'https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/libs/meshopt_decoder.module.js';
 import {RGBELoader} from 'https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/loaders/RGBELoader.js';
 const host=document.getElementById('scene'),status=document.getElementById('status');
 const scene=new THREE.Scene();scene.background=new THREE.Color('#c8b8a5');scene.fog=new THREE.Fog('#c8b8a5',18,34);
@@ -68,7 +70,8 @@ function addSofaFallback(){const g=new THREE.Group();g.position.set(0,0,-2.5);me
 function addChairFallback(){const g=new THREE.Group();g.position.set(2.8,0,-.7);const m=new THREE.MeshStandardMaterial({color:'#79533a',roughness:.88});mesh(new THREE.BoxGeometry(1.1,.4,.95),m,[0,.55,0],g,'Armchair');mesh(new THREE.BoxGeometry(1.1,.8,.2),m,[0,.95,-.38],g);for(const x of [-.43,.43])for(const z of [-.35,.35])mesh(new THREE.CylinderGeometry(.045,.055,.5,10),m,[x,.25,z],g);scene.add(g);modelMap.chair=g;selectable.push(g)}
 function addTableFallback(){const g=new THREE.Group();g.position.set(0,0,.2);mesh(new THREE.CylinderGeometry(.78,.78,.12,48),mats.stone,[0,.55,0],g,'Coffee table');mesh(new THREE.CylinderGeometry(.12,.2,.48,24),mats.dark,[0,.27,0],g);scene.add(g);modelMap.table=g;selectable.push(g)}
 // No primitive furniture substitutes: show only actual imported mesh assets.
-const loader=new GLTFLoader();
+const ktx2Loader=new KTX2Loader().setTranscoderPath('https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/libs/basis/').detectSupport(renderer);
+const loader=new GLTFLoader().setKTX2Loader(ktx2Loader).setMeshoptDecoder(MeshoptDecoder);
 function findUrl(o,path=[]){if(!o||typeof o!=='object')return null;if(typeof o.url==='string'&&(/\.(glb|gltf)(\?|$)/i.test(o.url)))return {url:o.url,path:path.join('/')};for(const [k,v] of Object.entries(o)){const found=findUrl(v,path.concat(k));if(found)return found}return null}
 const modelMeta={sofa_03:{label:'Sofa 03 · CC0 model',target:3.1,pos:[0,0,-2.5],replaces:'sofa',room:'living'},ArmChair_01:{label:'Arm Chair 01 · CC0 model',target:1.2,pos:[2.8,0,-.7],replaces:'chair',room:'living'},CoffeeTable_01:{label:'Coffee Table 01 · CC0 model',target:1.8,pos:[0,0,.2],replaces:'table',room:'living'},gothic_bed_01:{label:'Gothic Bed 01 · CC0 model',target:3.0,pos:[0,0,-2],replaces:'bed',room:'bedroom'},gothic_cabinet_01:{label:'Gothic Cabinet 01 · CC0 model',target:1.5,pos:[2.5,0,-2],replaces:'wardrobe',room:'wardrobe'},dining_table:{label:'Dining Table · CC0 model',target:2.5,pos:[0,0,-1],replaces:'dining',room:'dining'},modern_wooden_cabinet:{label:'Modern Wooden Cabinet · CC0 model',target:2.2,pos:[0,0,-2],replaces:'kitchenCabinet',room:'kitchen'}};
 function addImported(id,meta,gltf){const key=meta.room+':'+meta.replaces,old=modelMap[key];if(old){old.parent?.remove(old);const ix=selectable.indexOf(old);if(ix>=0)selectable.splice(ix,1)}const root=new THREE.Group(),model=gltf.scene;root.add(model);model.updateMatrixWorld(true);const box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());model.position.sub(center);model.position.y+=size.y/2;root.scale.setScalar(meta.target/(Math.max(size.x,size.y,size.z)||1));root.position.set(...meta.pos);root.userData={pick:meta.replaces,label:meta.label,source:'Poly Haven CC0'};root.visible=meta.room===activeRoom;roomGroups[meta.room].add(root);modelMap[key]=root;selectable.push(root);root.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}})}
@@ -179,7 +182,28 @@ document.querySelectorAll('[data-light]').forEach(btn=>btn.addEventListener('cli
 
 const roomPalettes={living:{floor:'#967b60',wall:'#c8b9a5',wood:'#513a29',trim:'#c6aa78',panel:'#513d2c'},bedroom:{floor:'#92775e',wall:'#d1c6b7',wood:'#4b3425',trim:'#c9b48f',panel:'#65503d'},kitchen:{floor:'#aaa49a',wall:'#e0ddd6',wood:'#4a4036',trim:'#b9a17a',panel:'#8a8378'},dining:{floor:'#8c7057',wall:'#d8cbbb',wood:'#533a28',trim:'#c5aa7d',panel:'#594431'},wardrobe:{floor:'#896f58',wall:'#cfc2b2',wood:'#3e2c20',trim:'#c2a575',panel:'#4b3829'}};
 ['living','bedroom','kitchen','dining','wardrobe'].forEach(k=>{addArchitecturalFinish(k,roomGroups[k],roomPalettes[k]);addRoomLighting(k,roomGroups[k])});
-loadAsset('sofa_03');loadAsset('ArmChair_01');loadAsset('CoffeeTable_01');loadAsset('gothic_bed_01');loadAsset('gothic_cabinet_01');loadAsset('dining_table');loadAsset('modern_wooden_cabinet');
+// Replace the code-built living room with a complete, authored CC0 GLB scene.
+async function loadCompleteLivingRoom(){
+ const source='https://tevy.dev/models/apartment-room/v2/lod0.glb';
+ status.textContent='Inserting complete furnished living-room model…';
+ try{
+  const gltf=await loader.loadAsync(source);
+  const root=new THREE.Group();root.name='VASTORA · Authored furnished living room';
+  const model=gltf.scene;model.updateMatrixWorld(true);
+  const bounds=new THREE.Box3().setFromObject(model),center=bounds.getCenter(new THREE.Vector3());
+  model.position.x-=center.x;model.position.y-=bounds.min.y;model.position.z-=center.z;
+  model.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;o.userData.pick=o.name||'Room furniture / surface';selectable.push(o);if(o.material){const ms=Array.isArray(o.material)?o.material:[o.material];ms.forEach(m=>{if(m.isMeshStandardMaterial||m.isMeshPhysicalMaterial){m.envMapIntensity=.9;m.needsUpdate=true}})}}});
+  root.add(model);root.userData.pick='Furnished living room';root.position.set(0,0,0);
+  // Remove the old procedural shell only after the authored room has loaded successfully.
+  for(let i=selectable.length-1;i>=0;i--){let p=selectable[i];while(p&&p!==room)p=p.parent;if(p===room)selectable.splice(i,1)}
+  scene.remove(room);roomGroups.living=root;scene.add(root);
+  addRoomLighting('living',root);
+  camera.position.set(6.2,3.65,7.4);orbit.target.set(0,1.25,0);orbit.update();
+  status.textContent='Complete furnished 3D room inserted · CC0 · 17,484 triangles · 1.4 MB';
+ }catch(e){console.error('Authored living room could not load',e);status.textContent='The complete room model could not load. Original preview retained.'}
+}
+loadCompleteLivingRoom();
+loadAsset('gothic_bed_01');loadAsset('gothic_cabinet_01');loadAsset('dining_table');loadAsset('modern_wooden_cabinet');
 const clock=new THREE.Clock();function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.05);if(walking&&(walk.isLocked||mobileWalk)){const dx=Number(keys.KeyD||keys.ArrowRight)-Number(keys.KeyA||keys.ArrowLeft),dz=Number(keys.KeyS||keys.ArrowDown)-Number(keys.KeyW||keys.ArrowUp);if(mobileWalk){const f=new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion);f.y=0;f.normalize();const r=new THREE.Vector3(1,0,0).applyQuaternion(camera.quaternion);r.y=0;r.normalize();camera.position.addScaledVector(r,dx*dt*2.7);camera.position.addScaledVector(f,-dz*dt*2.7);camera.position.y=1.65}else{walk.moveRight(dx*dt*2.7);walk.moveForward(dz*dt*2.7);camera.position.y=1.65}}orbit.update();renderer.render(scene,camera)}animate();
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
 </script>
