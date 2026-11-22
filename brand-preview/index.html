@@ -80,6 +80,78 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .reveal-ready.is-visible{opacity:1;transform:none}
 @media(max-width:760px){.editorial{grid-template-columns:1fr}.editorial-image,.editorial-image img{min-height:340px;height:340px}.editorial-copy{padding:58px 8vw 68px}.editorial-index{margin-top:28px}.editorial-copy h2{font-size:72px}}
 @media(prefers-reduced-motion:reduce){.editorial-image img,.reveal-ready{transition:none}.reveal-ready{opacity:1;transform:none}}
+
+/* VASTORA SIGNATURE REFINEMENT — editorial restraint, contrast and responsive polish */
+:root{--gold:#B5A080;--muted:#625C52}
+html{scroll-padding-top:104px}
+header{height:88px;padding-inline:7vw;background:rgba(240,236,227,.94);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid #29251F14}
+.brand{gap:15px}.monogram{width:39px;height:39px}
+nav{gap:clamp(16px,2.3vw,34px)}
+nav a{position:relative;white-space:nowrap}
+nav a:not(.navcta):after{content:"";position:absolute;left:0;right:100%;bottom:-9px;height:1px;background:var(--gold);transition:right .3s ease}
+nav a:not(.navcta):hover:after,nav a:not(.navcta):focus-visible:after{right:0}
+.navcta{transition:background .25s,color .25s,border-color .25s}
+.navcta:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.hero{height:min(850px,calc(100svh - 116px));min-height:660px}
+.hero:before{background:linear-gradient(90deg,#11120fd9 0%,#11120f82 39%,#11120f14 83%),linear-gradient(0deg,#11120f72 0%,transparent 48%)}
+.hero-content{max-width:1000px;padding-left:10vw;padding-bottom:10vh}
+.hero h1{font-size:clamp(70px,9vw,128px);line-height:.91;letter-spacing:-.035em;max-width:880px}
+.hero p{max-width:465px;font-size:13px;line-height:2.05}
+.hero .actions{margin-top:36px;gap:12px}
+.hero .btn{min-height:49px;padding-inline:25px}
+.hero .btn.gold{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.hero .btn.outline{background:#29251F44;border-color:#F0ECE3;color:#fff}
+.hero .btn:hover{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+.intro{padding-block:clamp(95px,11vw,155px)}
+.intro-image{box-shadow:0 22px 55px #29251F12}
+.intro-copy h2{max-width:630px;letter-spacing:-.025em}
+.intro-copy p{color:#625C52}
+.manifesto{position:relative;overflow:hidden}
+.manifesto:before,.manifesto:after{content:"";position:absolute;left:50%;width:56px;height:1px;background:#9A7955;transform:translateX(-50%)}
+.manifesto:before{top:38px}.manifesto:after{bottom:38px}
+.editorial{background:#E8E2D7}
+.editorial-image img{filter:saturate(.78)}
+.divisions{padding-block:clamp(88px,10vw,132px)}
+.division{position:relative;transition:background .35s ease,padding-top .35s ease}
+.division:hover{background:#ffffff08}
+.division h3{letter-spacing:-.015em}
+.collection{padding-block:clamp(88px,10vw,132px)}
+.gallery img{filter:saturate(.72) contrast(1.02)}
+.gallery figure:hover img{filter:saturate(.96) contrast(1.02)}
+.projects{padding-block:clamp(88px,10vw,132px)}
+.project-card{background:#5d584f}
+.project-card img{filter:saturate(.76)}
+.project-card:hover img{filter:saturate(.95)}
+.catalogue{padding-block:clamp(82px,9vw,120px)}
+.category{transition:transform .35s ease,box-shadow .35s ease}
+.category:hover{transform:translateY(-4px);box-shadow:0 16px 35px #29251F16}
+.category img{filter:saturate(.78);transition:filter .45s,transform .7s}
+.category:hover img{filter:saturate(1);transform:scale(1.025)}
+.materials-photo,.contract-photo,.showroom-image{filter:saturate(.82)}
+.process{padding-block:clamp(82px,9vw,118px)}
+.process-step{transition:transform .3s ease}
+.process-step:hover{transform:translateY(-4px)}
+.contact-panel{padding-block:clamp(75px,9vw,115px)}
+.enquiry-form input,.enquiry-form select,.enquiry-form textarea{transition:border-color .2s,background .2s}
+.enquiry-form input:focus,.enquiry-form select:focus,.enquiry-form textarea:focus{border-color:#9A7955;background:#F8F5EE;outline:none}
+footer{padding-top:78px}
+@media(max-width:900px){header{padding-inline:5vw}.hero-content{padding-left:8vw}.intro{padding-inline:7vw}}
+@media(max-width:650px){
+ header{height:74px;padding-inline:6vw}
+ nav{top:74px;padding:25px 7vw 30px;gap:21px;box-shadow:0 18px 30px #29251F0C}
+ nav a{font-size:10px}
+ nav .navcta{padding:12px 16px}
+ .hero{height:calc(88svh - 95px);min-height:610px}
+ .hero-content{padding:0 7vw 12vh}
+ .hero h1{font-size:clamp(58px,14vw,84px);line-height:.94}
+ .hero p{max-width:360px}
+ .intro{padding:78px 7vw}
+ .intro-image{height:350px}
+ .manifesto:before{top:24px}.manifesto:after{bottom:24px}
+ .footer-top{padding-bottom:38px}
+}
+@media(prefers-reduced-motion:reduce){.division,.category,.process-step,.category img,.gallery img{transition:none}}
+
 </style>
 </head>
 <body>
