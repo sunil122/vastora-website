@@ -68,6 +68,65 @@ a:focus-visible,button:focus-visible{outline:2px solid #765B3D;outline-offset:3p
 @media(prefers-reduced-motion:reduce){.product-dialog-image img{animation:none}}
 
 .variant-picker-label{display:block;margin:16px 0 8px;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}.variant-choice{border:1px solid #B5A080;background:transparent;color:var(--ink);padding:8px 11px;margin:0 6px 6px 0;font-size:9px;cursor:pointer}.variant-choice[aria-pressed="true"]{background:var(--ink);color:var(--paper)}.full-details-link{display:inline-block;margin-top:8px}
+
+/* VASTORA COLLECTION REFINEMENT */
+html{scroll-padding-top:100px}
+header{height:88px;padding-inline:7vw;background:rgba(240,236,227,.95);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.brand{gap:15px}.monogram{width:39px;height:39px}
+nav{gap:clamp(15px,2.2vw,31px)}
+nav a{position:relative;white-space:nowrap}
+nav a:not(.navcta):after{content:"";position:absolute;left:0;right:100%;bottom:-9px;height:1px;background:var(--champagne);transition:right .3s}
+nav a:not(.navcta):hover:after{right:0}
+.navcta{transition:background .25s,color .25s}
+.navcta:hover{background:var(--ink);color:var(--paper)}
+.hero{min-height:540px;padding:110px 10vw 90px;background-position:center 58%;position:relative;isolation:isolate}
+.hero:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,#1716124d,transparent 55%)}
+.hero h1{font-size:clamp(62px,8vw,104px);letter-spacing:-.03em;max-width:850px}
+.hero p{max-width:490px}
+.intro{padding-block:85px 52px}
+.filters{padding-bottom:40px;gap:8px}
+.filter{border-color:#B5A08088;transition:background .25s,border-color .25s,color .25s}
+.filter[aria-pressed=true]{background:var(--ink);border-color:var(--ink)}
+.grid{gap:48px 20px;padding-bottom:45px}
+.product{position:relative}
+.photo{aspect-ratio:4/4.65;background:#E4DED3}
+.photo img{transition:transform .9s cubic-bezier(.2,.65,.2,1),filter .5s;filter:saturate(.82)}
+.product:hover .photo img{transform:scale(1.045);filter:saturate(.98)}
+.photo:after{content:"View piece ↗";position:absolute;left:16px;bottom:15px;padding:10px 12px;background:#F0ECE3E8;color:#29251F;font-size:8px;letter-spacing:.14em;text-transform:uppercase;opacity:0;transform:translateY(5px);transition:opacity .3s,transform .3s;pointer-events:none}
+.product:hover .photo:after,.photo:focus-visible:after{opacity:1;transform:none}
+.product-info{padding-top:19px}
+.product-meta{font-size:8px;letter-spacing:.18em}
+.product h3{font-size:clamp(24px,2.2vw,31px);letter-spacing:-.015em}
+.product p{max-width:340px;color:#625C52}
+.product-link,.product-detail-trigger{border-bottom-color:#B5A080;color:#51412F;transition:color .2s,border-color .2s}
+.product-link:hover,.product-detail-trigger:hover{color:#8B6D4B;border-color:#8B6D4B}
+.pagination{padding-top:8px}
+.page-btn{border-color:#B5A08088}
+.note{background:#E7E1D6;border-left:2px solid #B5A080}
+.cta{padding-block:90px}
+.product-dialog{background:#171612D9}
+.product-dialog-panel{box-shadow:0 32px 100px #0008}
+.product-dialog-copy .eyebrow,.product-more-panel .eyebrow{letter-spacing:.24em}
+@media(max-width:850px){.grid{gap:36px 15px}.hero{padding-inline:8vw}}
+@media(max-width:650px){
+ header{height:74px;padding-inline:6vw}
+ nav{top:74px;gap:19px;box-shadow:0 18px 30px #29251F0C}
+ .hero{min-height:450px;padding:76px 7vw 62px;background-position:58% center}
+ .hero h1{font-size:clamp(51px,13vw,68px)}
+ .intro{padding:60px 7vw 32px}
+ .filters{display:flex;flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:#B5A080 transparent;padding:0 7vw 22px;gap:7px}
+ .filter{flex:0 0 auto;white-space:nowrap}
+ .grid{gap:30px 11px}
+ .photo{aspect-ratio:4/4.8}
+ .photo:after{display:none}
+ .product-info{padding-top:13px}
+ .product h3{font-size:21px;line-height:1.05}
+ .product p{font-size:9px;line-height:1.7}
+ .product-link,.product-detail-trigger{font-size:7px;letter-spacing:.1em}
+ .cta{padding-block:62px}
+}
+@media(prefers-reduced-motion:reduce){.photo img,.category,.product-dialog-image img{transition:none;animation:none}}
+
 </style>
 </head>
 <body>
