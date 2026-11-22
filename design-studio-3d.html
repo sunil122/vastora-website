@@ -21,8 +21,11 @@ select{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;ba
 #toolbar{position:fixed;z-index:5;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:8px;padding:9px;border-radius:30px;background:#171411dd;border:1px solid #ffffff24}
 #toolbar button{border:1px solid #6b5b49;background:#2b241d;color:#fff;border-radius:22px;padding:10px 14px}
 #toolbar button.active{background:var(--gold);color:#21180f}
+#toolbar .tool-sep{width:1px;background:#6b5b49;margin:4px 1px}
+#toolbar button:disabled{opacity:.35;cursor:not-allowed}
 #tip{position:fixed;z-index:5;bottom:25px;left:270px;color:#eee4d6;background:#171411b8;padding:9px 13px;border-radius:20px;font-size:12px}
 #status{font-size:12px;color:#b6a995;margin-top:12px;min-height:34px}
+#toolbar{max-width:calc(100vw - 16px);gap:4px;bottom:198px}#toolbar button{padding:8px 9px;font-size:11px}
 @media(max-width:850px){#view{inset:62px 0 190px 0}.brand{top:8px;left:12px;font-size:17px}header{top:8px;left:auto;right:8px;transform:none;padding:8px;font-size:11px;gap:8px}aside{top:auto;bottom:0;width:50%;height:190px;padding:12px;overflow:auto;border-top:1px solid var(--line)}#inspector{left:auto;right:0;height:190px;padding:12px;border-left:1px solid var(--line)}aside h3{margin:10px 0 6px}#toolbar{bottom:198px}#tip{display:none}.item{padding:7px;font-size:12px;margin:3px 0}.swatch{height:28px}}
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.166.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/"}}</script>
@@ -38,11 +41,12 @@ select{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;ba
 <h3>Free 3D asset library</h3><p class="muted">Download free CC0 furniture models, then import the GLB file here.</p><div class="row"><a class="ghost" style="text-align:center;text-decoration:none" href="https://polyhaven.com/models/furniture" target="_blank" rel="noreferrer">Browse Poly Haven ↗</a><a class="ghost" style="text-align:center;text-decoration:none" href="https://ambientcg.com/list" target="_blank" rel="noreferrer">Free textures ↗</a></div><h3>Import a finish texture</h3><input id="textureFile" type="file" accept="image/png,image/jpeg,image/webp" style="width:100%;font-size:12px;color:#ddd"><p class="muted">Apply a downloaded wood, marble, stone or fabric base-colour texture to the selected object or surface.</p><h3>Import your own 3D model</h3><input id="glbFile" type="file" accept=".glb,model/gltf-binary" style="width:100%;font-size:12px;color:#ddd"><p class="muted">GLB only for one-file imports. Each imported model becomes a separate editable object.</p><h3>Adjust object</h3><label class="muted">Scale</label><input id="scale" type="range" min=".7" max="1.35" step=".01" value="1" style="width:100%;accent-color:#d4ad70">
 <div class="row" style="margin-top:12px"><button class="ghost" id="rotate">Rotate 15°</button><button class="ghost" id="reset">Reset</button></div><div id="status">Select an item in the list or click it in the 3D room.</div></aside>
 <div id="tip">Drag to orbit · Scroll to zoom · Select an object to customize</div>
-<div id="toolbar"><button id="orbit" class="active">Orbit view</button><button id="walk">Walk mode</button><button id="home">Reset view</button></div>
+<div id="toolbar"><button id="orbit" class="active">Orbit</button><button id="walk">Walk</button><span class="tool-sep"></span><button id="move" disabled>Move</button><button id="turn" disabled>Rotate</button><button id="size" disabled>Scale</button><button id="home">Home</button></div>
 <script type="module">
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {PointerLockControls} from 'three/addons/controls/PointerLockControls.js';
+import {TransformControls} from 'three/addons/controls/TransformControls.js';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 const root=document.getElementById('view');
 const scene=new THREE.Scene();scene.background=new THREE.Color('#b7b0a6');scene.fog=new THREE.Fog('#b7b0a6',18,38);
@@ -50,6 +54,9 @@ const camera=new THREE.PerspectiveCamera(55,1,.1,100);camera.position.set(7,5.3,
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;root.appendChild(renderer.domElement);
 const orbit=new OrbitControls(camera,renderer.domElement);orbit.target.set(0,1.25,0);orbit.enableDamping=true;orbit.maxPolarAngle=Math.PI*.49;orbit.minDistance=3;orbit.maxDistance=17;
 const walk=new PointerLockControls(camera,renderer.domElement);let walkMode=false;const keys={};
+const transform=new TransformControls(camera,renderer.domElement);scene.add(transform.getHelper());
+transform.addEventListener('dragging-changed',e=>{orbit.enabled=!e.value&&!walkMode});
+transform.addEventListener('objectChange',()=>{if(selected)document.getElementById('status').textContent='Updated '+selected.userData.label+'.'});
 scene.add(new THREE.HemisphereLight(0xffead0,0x55483a,2.0));
 const sun=new THREE.DirectionalLight(0xffe5bf,3.0);sun.position.set(-4,9,5);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-10;sun.shadow.camera.right=10;sun.shadow.camera.top=10;sun.shadow.camera.bottom=-10;scene.add(sun);
 const warm=new THREE.PointLight(0xffbd72,55,12);warm.position.set(-3,3.3,-2.8);scene.add(warm);
@@ -99,12 +106,14 @@ function buildArchitecture(){
  const left=group('wall-left','Left wall','surface','Left wall finish · separate material control');box(left,.18,4.5,12,mats.cream,-5.9,2.13,0,0);
  // walnut vertical feature battens
  for(let i=0;i<22;i++)box(back,.055,3.8,.08,mats.walnut,-5.1+i*.12,2.15,-5.76,0);
- // window and glazing on right side
- box(scene, .06,3.0,4.4,mats.charcoal,5.88,2.05,-1.7,0);
+ // window frame and glazing are one independently selectable architectural element
+ const windowGroup=group('window','Window and glazing','surface','Window frame and glass · independent architectural finish');
+ box(windowGroup,.06,3.0,4.4,mats.charcoal,5.88,2.05,-1.7,0);
  const glass=new THREE.MeshStandardMaterial({color:'#9eb8c3',transparent:true,opacity:.23,roughness:.08,metalness:.12});
- box(scene,.025,2.8,4.15,glass,5.84,2.08,-1.7,0);
- // trim and ceiling
- box(scene,12,.14,12,mats.white,0,4.48,0,0);
+ box(windowGroup,.025,2.8,4.15,glass,5.84,2.08,-1.7,0);
+ // ceiling is its own independently selectable surface
+ const ceiling=group('ceiling','Ceiling','surface','Ceiling finish · separate from the floor and walls');
+ box(ceiling,12,.14,12,mats.white,0,4.48,0,0);
 }
 buildArchitecture();sofa();armchair();table();sideboard();plant();
 catalog.armchair.position.set(2.1,0,1.1);catalog.coffee.position.set(.1,0,1.65);catalog.sideboard.position.set(0,0,-5.25);catalog.plant.position.set(-4.65,0,-3.8);
@@ -116,20 +125,25 @@ function listObjects(){furnitureEl.innerHTML='';archEl.innerHTML='';selectable.f
 const glbLoader=new GLTFLoader();
 document.getElementById('textureFile').addEventListener('change',e=>{const file=e.target.files&&e.target.files[0];if(!file||!selected)return;const url=URL.createObjectURL(file);new THREE.TextureLoader().load(url,texture=>{texture.colorSpace=THREE.SRGBColorSpace;texture.wrapS=texture.wrapT=THREE.RepeatWrapping;texture.repeat.set(2,2);selected.traverse(o=>{if(o.isMesh){o.material=o.material.clone();o.material.map=texture;o.material.color.set('#ffffff');o.material.needsUpdate=true}});document.getElementById('status').textContent='Applied texture '+file.name+' to '+selected.userData.label+'.';URL.revokeObjectURL(url)},undefined,()=>{document.getElementById('status').textContent='Could not load this texture image.';URL.revokeObjectURL(url)});e.target.value=''});
 document.getElementById('glbFile').addEventListener('change',e=>{const file=e.target.files&&e.target.files[0];if(!file)return;const url=URL.createObjectURL(file);document.getElementById('status').textContent='Loading '+file.name+'…';glbLoader.load(url,gltf=>{const wrapper=new THREE.Group();const model=gltf.scene;wrapper.add(model);const bounds=new THREE.Box3().setFromObject(model);const size=bounds.getSize(new THREE.Vector3());const center=bounds.getCenter(new THREE.Vector3());model.position.sub(center);const maxDim=Math.max(size.x,size.y,size.z)||1;const factor=2.4/maxDim;model.scale.setScalar(factor);model.position.y+=size.y*factor/2;wrapper.position.set(0,0,1.8);wrapper.userData={id:'import-'+Date.now(),label:file.name.replace(/\\.glb$/i,''),kind:'furniture',desc:'Imported CC0 / GLB asset · independently selectable, movable, recolorable and resizable.'};scene.add(wrapper);selectable.push(wrapper);listObjects();select(wrapper);document.getElementById('status').textContent='Imported '+file.name+'. Select it to edit its finish, scale and rotation.';URL.revokeObjectURL(url)},undefined,err=>{console.error(err);document.getElementById('status').textContent='Could not load this GLB. Please check that it is a valid binary GLB file.';URL.revokeObjectURL(url)});e.target.value=''});
-function select(o){selected=o;document.querySelectorAll('.item').forEach(b=>b.classList.toggle('active',b.textContent===o.userData.label));document.getElementById('selectedName').textContent=o.userData.label;document.getElementById('selectedDesc').textContent=o.userData.desc;document.getElementById('scale').value=o.scale.x;document.getElementById('status').textContent='Editing only: '+o.userData.label;document.getElementById('replace').style.display=o.userData.kind==='furniture'?'block':'none';}
+function select(o){selected=o;document.querySelectorAll('.item').forEach(b=>b.classList.toggle('active',b.textContent===o.userData.label));document.getElementById('selectedName').textContent=o.userData.label;document.getElementById('selectedDesc').textContent=o.userData.desc;document.getElementById('scale').value=o.scale.x;document.getElementById('status').textContent='Editing only: '+o.userData.label;document.getElementById('replace').style.display=o.userData.kind==='furniture'?'block':'none';transform.attach(o);['move','turn','size'].forEach(id=>document.getElementById(id).disabled=false);}
 listObjects();
 const swatchNames=['cream','sand','taupe','walnut','dark walnut','brass','marble','charcoal','olive','white','stone'];
 const swatches=document.getElementById('swatches');swatchNames.forEach(n=>{const b=document.createElement('button');b.className='swatch';b.title=n;b.style.background=mats[n].color.getStyle();b.onclick=()=>applyMaterial(n);swatches.appendChild(b)});
 function applyMaterial(n){if(!selected)return;selected.traverse(o=>{if(o.isMesh){o.material=mats[n]}});document.querySelectorAll('.swatch').forEach(b=>b.classList.toggle('active',b.title===n));document.getElementById('status').textContent='Applied '+n+' finish to '+selected.userData.label+'.'}
 document.getElementById('replace').onchange=e=>{if(!selected||!e.target.value)return;const id=selected.userData.id,position=selected.position.clone(),rotation=selected.rotation.clone(),scale=selected.scale.clone();scene.remove(selected);selectable.splice(selectable.indexOf(selected),1);delete catalog[id];let next=id==='sofa'?sofa(e.target.value):id==='armchair'?armchair(e.target.value):id==='coffee'?table(e.target.value):null;if(next){next.position.copy(position);next.rotation.copy(rotation);next.scale.copy(scale);select(next);listObjects();document.getElementById('status').textContent='Replaced with '+e.target.value+'.'}e.target.value='';};
 const replace=document.getElementById('replace');replace.innerHTML='<option value="">Choose a model variation</option><optgroup label="Sofa"><option value="sectional">Large sectional</option><option value="loveseat">Compact loveseat</option></optgroup><optgroup label="Armchair"><option value="lounge">Lounge chair</option><option value="wide">Wide accent chair</option></optgroup><optgroup label="Coffee table"><option value="oval">Rectangular marble</option><option value="round">Round marble</option></optgroup>';
+document.getElementById('move').onclick=()=>{if(selected)transform.setMode('translate')};
+document.getElementById('turn').onclick=()=>{if(selected)transform.setMode('rotate')};
+document.getElementById('size').onclick=()=>{if(selected)transform.setMode('scale')};
+function activeTool(id){['move','turn','size'].forEach(k=>document.getElementById(k).classList.toggle('active',k===id))}
+['move','turn','size'].forEach(id=>document.getElementById(id).addEventListener('click',()=>activeTool(id)));
 document.getElementById('scale').oninput=e=>{if(selected)selected.scale.setScalar(+e.target.value)};
 document.getElementById('rotate').onclick=()=>{if(selected)selected.rotation.y+=Math.PI/12};
 document.getElementById('reset').onclick=()=>{if(selected){selected.scale.setScalar(1);selected.rotation.set(0,0,0);document.getElementById('scale').value=1}};
 const ray=new THREE.Raycaster(),pointer=new THREE.Vector2();
 renderer.domElement.addEventListener('click',e=>{if(walkMode)return;const r=renderer.domElement.getBoundingClientRect();pointer.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);ray.setFromCamera(pointer,camera);const hits=ray.intersectObjects(selectable.flatMap(g=>g.children),true);if(hits.length){let o=hits[0].object;while(o.parent&&!o.userData.id)o=o.parent;if(o.userData.id)select(o)}});
-document.getElementById('orbit').onclick=()=>{walkMode=false;walk.unlock();orbit.enabled=true;document.getElementById('orbit').classList.add('active');document.getElementById('walk').classList.remove('active')};
-document.getElementById('walk').onclick=()=>{walkMode=true;orbit.enabled=false;walk.lock();document.getElementById('walk').classList.add('active');document.getElementById('orbit').classList.remove('active')};
+document.getElementById('orbit').onclick=()=>{walkMode=false;walk.unlock();orbit.enabled=!transform.dragging;document.getElementById('orbit').classList.add('active');document.getElementById('walk').classList.remove('active')};
+document.getElementById('walk').onclick=()=>{walkMode=true;transform.detach();orbit.enabled=false;walk.lock();document.getElementById('walk').classList.add('active');document.getElementById('orbit').classList.remove('active')};
 const velocity=new THREE.Vector3(),direction=new THREE.Vector3();window.addEventListener('keydown',e=>keys[e.code]=true);window.addEventListener('keyup',e=>keys[e.code]=false);
 document.getElementById('home').onclick=()=>{walk.unlock();walkMode=false;orbit.enabled=true;camera.position.set(7,5.3,8);orbit.target.set(0,1.25,0);orbit.update();document.getElementById('orbit').classList.add('active');document.getElementById('walk').classList.remove('active')};
 function resize(){const w=root.clientWidth,h=root.clientHeight;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h)}window.addEventListener('resize',resize);resize();
