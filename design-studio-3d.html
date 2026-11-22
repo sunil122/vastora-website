@@ -47,6 +47,28 @@ select{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;ba
 <div id="tip">Drag to orbit · Scroll to zoom · Select an object to customize</div>
 <div id="walkPad"><button data-key="KeyW" style="grid-column:2;grid-row:1">↑</button><button data-key="KeyA" style="grid-column:1;grid-row:2">←</button><button data-key="KeyS" style="grid-column:2;grid-row:2">↓</button><button data-key="KeyD" style="grid-column:3;grid-row:2">→</button></div><div id="lookHint">Drag the room to look around</div>
 <div id="toolbar"><button id="orbit" class="active">Orbit</button><button id="walk">Walk</button><span class="tool-sep"></span><button id="move" disabled>Move</button><button id="turn" disabled>Rotate</button><button id="size" disabled>Scale</button><button id="home">Home</button></div>
+<script>
+(()=> {
+ const view=document.getElementById('view');
+ const status=document.getElementById('status');
+ let ready=false;
+ const show=(message)=>{
+   if(status) status.textContent=message;
+   if(view&&!view.querySelector('canvas')){
+     view.innerHTML='<div style="height:100%;display:grid;place-items:center;padding:28px;text-align:center;color:#f5eee4;font:14px/1.6 system-ui;background:linear-gradient(135deg,#30271f,#15120f)"><div style="max-width:340px"><div style="font-size:22px;margin-bottom:10px">3D room could not start</div><div>'+message+'</div><div style="margin-top:14px;color:#cdbb9e">On Android, try opening this preview in Chrome rather than the in-app browser. If it still fails, send us this message.</div></div></div>';
+   }
+ };
+ window.addEventListener('error',e=>{
+   if(e.target&&e.target!==window)return;
+   show('3D startup error: '+(e.message||'A JavaScript module failed to load.'));
+ },true);
+ window.addEventListener('unhandledrejection',e=>{
+   show('3D startup error: '+(e.reason&&e.reason.message?e.reason.message:String(e.reason||'Unknown error')));
+ });
+ window.__vastora3DReady=()=>{ready=true};
+ setTimeout(()=>{if(!ready)show('The 3D engine did not finish starting. This can happen when WebGL graphics or the Three.js modules are blocked by the browser.')},12000);
+})();
+</script>
 <script type="module">
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
@@ -56,7 +78,7 @@ import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 const root=document.getElementById('view');
 const scene=new THREE.Scene();scene.background=new THREE.Color('#b7b0a6');scene.fog=new THREE.Fog('#b7b0a6',18,38);
 const camera=new THREE.PerspectiveCamera(55,1,.1,100);camera.position.set(7,5.3,8);
-const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;root.appendChild(renderer.domElement);
+let renderer;try{renderer=new THREE.WebGLRenderer({antialias:true})}catch(error){const message='This browser could not create a WebGL graphics context. Open the preview in Chrome or another browser with hardware acceleration enabled.';document.getElementById('status').textContent=message;root.innerHTML='<div style="height:100%;display:grid;place-items:center;padding:28px;text-align:center;color:#f5eee4;font:14px/1.6 system-ui;background:linear-gradient(135deg,#30271f,#15120f)"><div style="max-width:340px"><div style="font-size:22px;margin-bottom:10px">3D graphics unavailable</div>'+message+'</div></div>';throw error}renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;root.appendChild(renderer.domElement);
 const orbit=new OrbitControls(camera,renderer.domElement);orbit.target.set(0,1.25,0);orbit.enableDamping=true;orbit.maxPolarAngle=Math.PI*.49;orbit.minDistance=3;orbit.maxDistance=17;
 const walk=new PointerLockControls(camera,renderer.domElement);let walkMode=false;const keys={};let mobileWalk=false;let lookPointer=null;let lastLook={x:0,y:0};
 const transform=new TransformControls(camera,renderer.domElement);scene.add(transform.getHelper());
@@ -181,6 +203,6 @@ renderer.domElement.addEventListener('pointermove',e=>{if(!mobileWalk||lookPoint
 renderer.domElement.addEventListener('pointerup',e=>{if(lookPointer===e.pointerId)lookPointer=null});
 document.getElementById('home').onclick=()=>{walk.unlock();walkMode=false;mobileWalk=false;document.getElementById('walkPad').style.display='none';document.getElementById('lookHint').style.display='none';orbit.enabled=true;camera.position.set(7,5.3,8);camera.rotation.set(0,0,0);orbit.target.set(0,1.25,0);orbit.update();document.getElementById('orbit').classList.add('active');document.getElementById('walk').classList.remove('active')};
 function resize(){const w=root.clientWidth,h=root.clientHeight;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h)}window.addEventListener('resize',resize);resize();
-const clock=new THREE.Clock();function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.05);if(walkMode&&(walk.isLocked||mobileWalk)){direction.set(Number(keys.KeyD||keys.ArrowRight)-Number(keys.KeyA||keys.ArrowLeft),0,Number(keys.KeyS||keys.ArrowDown)-Number(keys.KeyW||keys.ArrowUp)).normalize();if(direction.lengthSq()){const speed=2.8*dt;if(mobileWalk){const forward=new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion);forward.y=0;forward.normalize();const right=new THREE.Vector3(1,0,0).applyQuaternion(camera.quaternion);right.y=0;right.normalize();camera.position.addScaledVector(right,direction.x*speed);camera.position.addScaledVector(forward,-direction.z*speed)}else{walk.moveRight(direction.x*speed);walk.moveForward(direction.z*speed)}camera.position.y=1.65;}}orbit.update();renderer.render(scene,camera)}animate();
+const clock=new THREE.Clock();function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.05);if(walkMode&&(walk.isLocked||mobileWalk)){direction.set(Number(keys.KeyD||keys.ArrowRight)-Number(keys.KeyA||keys.ArrowLeft),0,Number(keys.KeyS||keys.ArrowDown)-Number(keys.KeyW||keys.ArrowUp)).normalize();if(direction.lengthSq()){const speed=2.8*dt;if(mobileWalk){const forward=new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion);forward.y=0;forward.normalize();const right=new THREE.Vector3(1,0,0).applyQuaternion(camera.quaternion);right.y=0;right.normalize();camera.position.addScaledVector(right,direction.x*speed);camera.position.addScaledVector(forward,-direction.z*speed)}else{walk.moveRight(direction.x*speed);walk.moveForward(direction.z*speed)}camera.position.y=1.65;}}orbit.update();renderer.render(scene,camera)}animate();window.__vastora3DReady?.();
 </script>
 </body></html>
