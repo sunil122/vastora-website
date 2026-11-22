@@ -236,6 +236,14 @@ nav{background:linear-gradient(180deg,rgba(20,15,12,.96),rgba(20,15,12,.74));box
 .hs{border-color:#fff;background:var(--gold);box-shadow:0 0 0 5px rgba(208,170,103,.18),0 6px 24px rgba(0,0,0,.42)}
 #pn{background:linear-gradient(145deg,rgba(45,32,23,.98),rgba(17,13,11,.98));border-color:rgba(234,211,162,.5);box-shadow:0 22px 70px rgba(0,0,0,.48)}
 @media(max-width:720px){.cap{left:4vw;right:4vw;max-width:none;padding:16px 18px}.cap p{max-width:34ch}#hint{right:4vw;max-width:52vw}}
+
+/* First-person walk controls */
+#walkpad{position:absolute;z-index:12;left:22px;bottom:22px;display:grid;grid-template-columns:46px 46px 46px;grid-template-rows:46px 46px;gap:5px;align-items:center;justify-items:center;pointer-events:auto}
+#walkpad button,#walkhint{border:1px solid rgba(234,211,162,.55);background:rgba(20,15,12,.82);color:#f8f1e7;border-radius:14px;box-shadow:0 5px 18px #0005;backdrop-filter:blur(8px);touch-action:none}
+#walkpad button{width:46px;height:46px;font-size:19px}
+#walkpad button:active,#walkpad button.active{background:#d0aa67;color:#21170f}
+#walkhint{position:absolute;z-index:11;left:180px;bottom:30px;padding:9px 13px;font-size:12px;opacity:.9}
+@media(max-width:720px){#walkpad{left:12px;bottom:12px;grid-template-columns:40px 40px 40px;grid-template-rows:40px 40px;gap:4px}#walkpad button{width:40px;height:40px}#walkhint{left:150px;bottom:18px;font-size:10px;max-width:110px}}
 </style>
 </head>
 <body>
@@ -245,7 +253,7 @@ nav{background:linear-gradient(180deg,rgba(20,15,12,.96),rgba(20,15,12,.74));box
 <div class="cap"><small id="cs"></small><h1 id="ct"></h1><p id="cp"></p></div>
 <div id="hint">Drag to look &middot; tap the arrows to walk</div>
 <div id="ctl"><button id="tr">&#9654; Tour</button><button id="tg">&#9728; Day</button><span id="zb"></span><span id="sw"></span></div>
-<div id="pn"></div>
+<div id="pn"></div><div id="walkpad" aria-label="Walk controls"><span></span><button type="button" data-walk="forward" aria-label="Walk forward">▲</button><span></span><button type="button" data-walk="left" aria-label="Walk left">◀</button><button type="button" data-walk="back" aria-label="Walk backward">▼</button><button type="button" data-walk="right" aria-label="Walk right">▶</button></div><div id="walkhint">WASD / arrows · drag to look</div>
 </div>
 <section id="about"><small class="eb">Our services</small><h2>One team, from the first sketch to the final switch.</h2><p class="lead">We design and build complete homes from scratch, then fit them out inside and out. Choose a single service or let us manage everything for you.</p>
 <div class="sv"><div class="card"><small>01</small><h3>Architectural design</h3>Concept, floor plans, 3D views and approval drawings for your home.</div><div class="card"><small>02</small><h3>Construction from scratch</h3>Foundation, structure, walls and roof, built and supervised right through to finish.</div><div class="card"><small>03</small><h3>Interior design and fit-out</h3>Layouts, lighting, finishes and furniture for every room.</div><div class="card"><small>04</small><h3>Modular kitchens and joinery</h3>Aluminium and timber kitchens, wardrobes and wall panelling.</div><div class="card"><small>05</small><h3>Complete electrical</h3>Wiring, distribution boards, lighting, smart controls and earthing.</div><div class="card"><small>06</small><h3>Plumbing and sanitary</h3>Water supply, drainage, bathrooms, fixtures and water heating.</div><div class="card"><small>07</small><h3>Aluminium, glass and doors</h3>Windows, doors, railings, partitions and facades.</div><div class="card"><small>08</small><h3>Exterior and landscaping</h3>Pergolas, boundary walls, paving, gardens and outdoor lighting.</div><div class="card"><small>09</small><h3>Painting and finishing</h3>Plaster, waterproofing, flooring, paint and the final details.</div><div class="card"><small>10</small><h3>Project management and handover</h3>One point of contact, regular progress updates, a snag list and a clean handover.</div></div>
@@ -397,7 +405,19 @@ pn.classList.add('on');st.classList.add('pz')}
 function closeP(){hideP();move(cx,cz,yaw,0,0)}
 function draw(){cam.style.transform=`translateZ(${dol}px) rotateX(${pit}deg) rotateY(${yaw}deg) translate3d(${-cx}px,${by}px,${-cz}px)`;
 hs.forEach((b,j)=>{const q=pos[j];b.style.transform=`translate3d(${q[0]}px,${q[1]}px,${q[2]}px) rotateY(${-yaw}deg) rotateX(${-pit}deg)`})}
+
+/* Continuous first-person movement: keyboard and touch */
+const walkKeys={};
+const walkButtons=[...st.querySelectorAll('[data-walk]')];
+function setWalk(k,v){walkKeys[k]=v;const b=walkButtons.find(x=>x.dataset.walk===k);if(b)b.classList.toggle('active',v)}
+window.addEventListener('keydown',e=>{const k=e.key.toLowerCase();const map={w:'forward',arrowup:'forward',s:'back',arrowdown:'back',a:'left',arrowleft:'left',d:'right',arrowright:'right'};if(map[k]&&!/input|textarea|select/i.test(e.target.tagName)){e.preventDefault();setWalk(map[k],true)}});
+window.addEventListener('keyup',e=>{const k=e.key.toLowerCase();const map={w:'forward',arrowup:'forward',s:'back',arrowdown:'back',a:'left',arrowleft:'left',d:'right',arrowright:'right'};if(map[k])setWalk(map[k],false)});
+window.addEventListener('blur',()=>Object.keys(walkKeys).forEach(k=>setWalk(k,false)));
+walkButtons.forEach(b=>{const k=b.dataset.walk;b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture(e.pointerId);setWalk(k,true)});['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,()=>setWalk(k,false)))});
+function updateWalk(){if(tw||foc||shopOn)return;let f=(walkKeys.forward?1:0)-(walkKeys.back?1:0),r=(walkKeys.right?1:0)-(walkKeys.left?1:0);if(!f&&!r)return;const mag=Math.hypot(f,r);f/=mag;r/=mag;const a=yaw*Math.PI/180,dx=(-Math.sin(a)*f+Math.cos(a)*r)*13,dz=(-Math.cos(a)*f-Math.sin(a)*r)*13;const nx=cx+dx,nz=cz+dz;if(!hit(nx,nz)){cx=nx;cz=nz;place()}else{if(!hit(cx+dx,cz))cx+=dx;if(!hit(cx,cz+dz))cz+=dz;place()}vel=0}
+
 function loop(){
+updateWalk();
 if(shopOn){requestAnimationFrame(loop);return}
 if(tw){tw.t=Math.min(1,tw.t+Math.min(.05,6/tw.d));const k=tw.t*tw.t*(3-2*tw.t),p=tw.a,q=tw.b;
 cx=p[0]+(q[0]-p[0])*k;cz=p[1]+(q[1]-p[1])*k;yaw=p[2]+(q[2]-p[2])*k;pit=p[3]+(q[3]-p[3])*k;dol=p[4]+(q[4]-p[4])*k;by=Math.sin(tw.t*tw.d/38)*3;
