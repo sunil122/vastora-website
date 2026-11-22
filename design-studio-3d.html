@@ -54,7 +54,7 @@ const sun=new THREE.DirectionalLight(0xffe5bf,3.0);sun.position.set(-4,9,5);sun.
 const warm=new THREE.PointLight(0xffbd72,55,12);warm.position.set(-3,3.3,-2.8);scene.add(warm);
 const mats={};
 function mat(name,color,rough=.55,metal=0){return mats[name]=new THREE.MeshStandardMaterial({color,roughness:rough,metalness:metal})}
-mat('cream','#d7c8b5',.82);mat('sand','#b8a18a',.8);mat('taupe','#806c5b',.78);mat('walnut','#573722',.43);mat('dark walnut','#302016',.38);mat('brass','#b58b4d',.27,.75);mat('marble','#ded8cf',.22);mat('charcoal','#292725',.45);mat('olive','#59604a',.8);mat('white','#f0e9df',.7);mat('stone','#b5aaa0',.85);mat('glass','#9db8bd',.16,.2);
+mat('cream','#d7c8b5',.82);mat('sand','#b8a18a',.8);mat('taupe','#806c5b',.78);mat('walnut','#573722',.43);mat('dark walnut','#302016',.38);mat('brass','#b58b4d',.27,.75);mat('marble','#ded8cf',.22);mat('charcoal','#292725',.45);mats.dark=mats['dark walnut'];mat('olive','#59604a',.8);mat('white','#f0e9df',.7);mat('stone','#b5aaa0',.85);mat('glass','#9db8bd',.16,.2);
 const selectable=[];const catalog={};
 function mesh(geo,material,parent,x=0,y=0,z=0){const m=new THREE.Mesh(geo,material);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m}
 function box(parent,w,h,d,material,x,y,z,r=.06){let geo=new THREE.BoxGeometry(w,h,d);let m=mesh(geo,material,parent,x,y,z);if(r){const e=new THREE.EdgesGeometry(geo);/* retain clean bevel-free silhouette */}return m}
