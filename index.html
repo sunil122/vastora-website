@@ -247,7 +247,7 @@ nav{background:linear-gradient(180deg,rgba(20,15,12,.96),rgba(20,15,12,.74));box
 </style>
 </head>
 <body>
-<nav><b id="br">VASTORA</b><span><a href="#home">Showroom</a><a href="design-studio-3d.html">Editable 3D Studio</a><a href="#shop">Shop</a><a href="#studio">Design studio</a><a href="#quote" style="color:var(--gold)">Free quote</a><a href="#about">Services</a><a href="#contact">Contact</a></span></nav>
+<nav><b id="br">VASTORA</b><span><a href="showroom.html">Showroom</a><a href="design-studio-3d.html">Editable 3D Studio</a><a href="#shop">Shop</a><a href="#studio">Design studio</a><a href="#quote" style="color:var(--gold)">Free quote</a><a href="#about">Services</a><a href="#contact">Contact</a></span></nav>
 <div id="home"><div id="stage">
 <div id="intro"><div class="ln"></div><small id="ibr"></small><h1 id="itg"></h1><p>Step inside our showroom and walk through living spaces, kitchens, bedrooms and spas, exactly as they will feel in your home.</p><button class="btn" id="enter">Enter the showroom</button><button class="btn" id="introq" style="margin-top:14px;background:none;color:var(--fg);border:1px solid var(--gold)">Get an instant photo quote</button></div>
 <div class="cap"><small id="cs"></small><h1 id="ct"></h1><p id="cp"></p></div>
@@ -877,7 +877,7 @@ document.title=SITE.brand+' | Luxury Interiors';
 $('br').textContent=SITE.brand;$('ibr').textContent=SITE.brand;$('itg').textContent=SITE.tagline;$('ftr').textContent='\u00a9 2026 '+SITE.brand+'. All rights reserved.';
 if(/^data:image\//.test(SITE.hero||''))$('intro').style.backgroundImage=`linear-gradient(#0f0d0c88,#0f0d0cee),url(${SITE.hero})`;
 $('pg').innerHTML=P.map((p,i)=>card(p,i)).slice(0,4).join('');
-$('enter').onclick=()=>$('intro').classList.add('off')}
+$('enter').onclick=()=>{location.href='showroom.html'}}
 studioMats();applySite();renderShop();bindShop();initAI();initStudio();studioPost();place();route();loop();
 </script>
 </body>
