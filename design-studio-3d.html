@@ -77,9 +77,9 @@ import {TransformControls} from 'three/addons/controls/TransformControls.js';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 const root=document.getElementById('view');
 const scene=new THREE.Scene();scene.background=new THREE.Color('#b7b0a6');scene.fog=new THREE.Fog('#b7b0a6',18,38);
-const camera=new THREE.PerspectiveCamera(55,1,.1,100);camera.position.set(7,5.3,8);
+const camera=new THREE.PerspectiveCamera(55,1,.1,100);camera.position.set(10.5,7.2,13.5);
 let renderer;try{renderer=new THREE.WebGLRenderer({antialias:true})}catch(error){const message='This browser could not create a WebGL graphics context. Open the preview in Chrome or another browser with hardware acceleration enabled.';document.getElementById('status').textContent=message;root.innerHTML='<div style="height:100%;display:grid;place-items:center;padding:28px;text-align:center;color:#f5eee4;font:14px/1.6 system-ui;background:linear-gradient(135deg,#30271f,#15120f)"><div style="max-width:340px"><div style="font-size:22px;margin-bottom:10px">3D graphics unavailable</div>'+message+'</div></div>';throw error}renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;root.appendChild(renderer.domElement);
-const orbit=new OrbitControls(camera,renderer.domElement);orbit.target.set(0,1.25,0);orbit.enableDamping=true;orbit.maxPolarAngle=Math.PI*.49;orbit.minDistance=3;orbit.maxDistance=17;
+const orbit=new OrbitControls(camera,renderer.domElement);orbit.target.set(0,1.25,0);orbit.enableDamping=true;orbit.maxPolarAngle=Math.PI*.49;orbit.minDistance=3;orbit.maxDistance=26;
 const walk=new PointerLockControls(camera,renderer.domElement);let walkMode=false;const keys={};let mobileWalk=false;let lookPointer=null;let lastLook={x:0,y:0};
 const transform=new TransformControls(camera,renderer.domElement);scene.add(transform.getHelper());
 transform.addEventListener('dragging-changed',e=>{orbit.enabled=!e.value&&!walkMode});
@@ -127,6 +127,19 @@ function table(variant='oval'){
 }
 function sideboard(){const g=group('sideboard','Media console','furniture','Wall console · walnut cabinetry with brass details');box(g,2.5,.52,.48,mats.walnut,0,.38,0);for(let i=0;i<4;i++)box(g,.015,.38,.012,mats.brass,-.9+i*.6,.39,.247);box(g,2.6,.06,.55,mats.dark,0,.68,0);return g}
 function plant(){const g=group('plant','Indoor planter','furniture','Decorative planter and foliage');mesh(new THREE.CylinderGeometry(.28,.22,.55,32),mats.charcoal,g,0,.28,0);for(let i=0;i<9;i++){const a=i*2.4,r=.25+(i%3)*.08;const leaf=mesh(new THREE.SphereGeometry(.13,12,10),mats.olive,g,Math.cos(a)*r,.85+(i%4)*.22,Math.sin(a)*r);leaf.scale.set(.65,2.1,.5);leaf.rotation.z=Math.cos(a)*.5;leaf.rotation.x=Math.sin(a)*.5}return g}
+
+function kitchenBase(id,label,x,w=1.2){const g=group(id,label,'furniture','Kitchen cabinetry · individually selectable and editable');g.userData.category='cabinet';box(g,w,.82,.62,mats.walnut,x,.43,-5.12,0);box(g,w-.05,.68,.035,mats.cream,x,.43,-4.79,0);box(g,w-.05,.045,.045,mats.brass,x,.43,-4.75,0);box(g,w+.04,.08,.68,mats.marble,x,.88,-5.1,0);return g}
+function kitchenDining(){
+ // Full residential kitchen run with separate base units, wall units and appliances.
+ kitchenBase('kitchen-base-1','Base cabinet · left',-3.75,1.25);kitchenBase('kitchen-base-2','Sink base cabinet',-2.43,1.25);kitchenBase('kitchen-base-3','Drawer cabinet',-1.11,1.25);kitchenBase('kitchen-base-4','Cooktop cabinet',.21,1.25);
+ const wallUnits=group('kitchen-wall-units','Upper kitchen cabinets','furniture','Wall-mounted cupboards with separate selectable finish');wallUnits.userData.category='cabinet';for(let i=0;i<4;i++){const x=-3.75+i*1.32;box(wallUnits,1.22,.88,.42,mats.cream,x,2.72,-5.42,0);box(wallUnits,1.16,.82,.035,mats.sand,x,2.72,-5.195,0);box(wallUnits,.025,.7,.04,mats.brass,x+.48,2.72,-5.16,0)}
+ const fridge=group('kitchen-fridge','Stainless steel refrigerator','furniture','Full-height refrigerator · separate appliance');fridge.userData.category='appliance';box(fridge,1.05,2.35,.82,mats.charcoal,3.35,1.18,-5.15,0);box(fridge,.98,2.26,.04,mats.glass,3.35,1.18,-4.72,0);box(fridge,.025,.8,.035,mats.brass,3.02,1.25,-4.68,0);
+ const sink=group('kitchen-sink','Kitchen sink and tap','furniture','Inset sink and mixer tap');sink.userData.category='appliance';box(sink,1.05,.045,.55,mats.charcoal,-2.43,.96,-5.08,0);box(sink,.88,.025,.4,mats.glass,-2.43,.99,-5.08,0);mesh(new THREE.CylinderGeometry(.035,.035,.42,16),mats.brass,sink,-2.43,1.18,-5.36);mesh(new THREE.TorusGeometry(.15,.035,10,24,Math.PI),mats.brass,sink,-2.43,1.36,-5.36);
+ const hob=group('kitchen-hob','Built-in hob and oven','furniture','Cooktop and oven unit');hob.userData.category='appliance';box(hob,.95,.05,.55,mats.charcoal,.21,.98,-5.08,0);for(let x of [-.08,.48])for(let z of [-5.23,-4.95])mesh(new THREE.TorusGeometry(.13,.018,8,24),mats.brass,hob,x,1.015,z);box(hob,.92,.62,.05,mats.charcoal,.21,.43,-4.77,0);box(hob,.72,.34,.025,mats.glass,.21,.43,-4.735,0);
+ const dining=group('dining-table','Dining table · six seats','furniture','Family dining table · select and change independently');dining.userData.category='table';box(dining,2.65,.14,1.25,mats.walnut,.25,.82,1.15,0);for(let x of [-.82,1.32])for(let z of [.72,1.58])box(dining,.12,.72,.12,mats.dark,x,.36,z,0);for(let x of [-.65,.25,1.15]){box(dining,.08,.68,.08,mats.dark,x,.36,.78,0);box(dining,.08,.68,.08,mats.dark,x,.36,1.52,0)}
+ for(let i=0;i<6;i++){const x=i<3?-.55+i*.8:1.8-(i-3)*.8;const z=i<3?.25:2.05;const chair=group('dining-chair-'+(i+1),'Dining chair '+(i+1),'furniture','Dining chair · separately selectable');chair.userData.category='chair';box(chair,.55,.12,.55,mats.sand,x,.48,z,0);box(chair,.55,.72,.1,mats.walnut,x,.88,z+(i<3?-.22:.22),0);for(let dx of [-.21,.21])for(let dz of [-.2,.2])mesh(new THREE.CylinderGeometry(.025,.03,.48,10),mats.dark,chair,x+dx,.23,z+dz)}
+ const pendant=group('dining-pendant','Dining pendant light','furniture','Pendant light over dining table');pendant.userData.category='lighting';mesh(new THREE.CylinderGeometry(.025,.025,1.05,12),mats.brass,pendant,.25,3.65,1.15);mesh(new THREE.CylinderGeometry(.24,.42,.22,32),mats.brass,pendant,.25,3.08,1.15);mesh(new THREE.SphereGeometry(.13,16,12),mats.white,pendant,.25,2.94,1.15);
+}
 function buildArchitecture(){
  const floor=group('floor','Marble floor','surface','Floor finish · changes independently from every wall');box(floor,12,.18,12,mats.marble,0,-.12,0,0);
  const back=group('wall-back','Rear feature wall','surface','Rear wall finish · separate material control');box(back,12,4.5,.18,mats.stone,0,2.13,-5.9,0);
@@ -164,7 +177,7 @@ loadCC0('Sofa_01');loadCC0('ArmChair_01');loadCC0('CoffeeTable_01');
 const roomPresets={
  living:{label:'Living room',models:['Sofa_01','ArmChair_01','CoffeeTable_01','Chandelier_01','Shelf_01']},
  bedroom:{label:'Bedroom',models:['GothicBed_01','ClassicConsole_01','Chandelier_01','Shelf_01']},
- kitchen:{label:'Kitchen & dining',models:['KitchenBase600','KitchenDrawer500','WoodenTable_01','Chandelier_01']},
+ kitchen:{label:'Kitchen & dining',models:[]},
  bathroom:{label:'Bathroom',models:['BathroomMirrorCabinet','GothicCabinet_01']},
  wardrobe:{label:'Wardrobe',models:['GothicCabinet_01','ClassicConsole_01','Chandelier_01']}
 };
@@ -175,9 +188,9 @@ document.getElementById('roomPreset').addEventListener('change',async e=>{
  listObjects();document.getElementById('selectedName').textContent=preset.label;document.getElementById('selectedDesc').textContent='Loading individual free 3D objects for this room. Each loaded object can be selected and edited separately.';
  document.querySelector('header .muted').textContent=preset.label+' · Editable scene';
  const status=document.getElementById('status');status.textContent='Loading '+preset.label+' furniture…';
- for(const id of preset.models){await loadCC0(id)}
+ if(e.target.value==='kitchen'){kitchenDining();listObjects()}else{for(const id of preset.models){await loadCC0(id)}}
  status.textContent=preset.label+' loaded. Select any item in the room or object list to move, rotate, resize or change its finish.';
- camera.position.set(7,5.3,8);orbit.target.set(0,1.25,0);orbit.update();
+ camera.position.set(10.5,7.2,13.5);orbit.target.set(0,1.25,0);orbit.update();
 });
 const swatchNames=['cream','sand','taupe','walnut','dark walnut','brass','marble','charcoal','olive','white','stone'];
 const swatches=document.getElementById('swatches');swatchNames.forEach(n=>{const b=document.createElement('button');b.className='swatch';b.title=n;b.style.background=mats[n].color.getStyle();b.onclick=()=>applyMaterial(n);swatches.appendChild(b)});
@@ -201,7 +214,7 @@ document.querySelectorAll('#walkPad button').forEach(b=>{const key=b.dataset.key
 renderer.domElement.addEventListener('pointerdown',e=>{if(!mobileWalk)return;lookPointer=e.pointerId;lastLook={x:e.clientX,y:e.clientY};renderer.domElement.setPointerCapture(e.pointerId)});
 renderer.domElement.addEventListener('pointermove',e=>{if(!mobileWalk||lookPointer!==e.pointerId)return;const dx=e.clientX-lastLook.x,dy=e.clientY-lastLook.y;camera.rotation.order='YXZ';camera.rotation.y-=dx*.004;camera.rotation.x=Math.max(-1.1,Math.min(1.1,camera.rotation.x-dy*.003));lastLook={x:e.clientX,y:e.clientY}});
 renderer.domElement.addEventListener('pointerup',e=>{if(lookPointer===e.pointerId)lookPointer=null});
-document.getElementById('home').onclick=()=>{walk.unlock();walkMode=false;mobileWalk=false;document.getElementById('walkPad').style.display='none';document.getElementById('lookHint').style.display='none';orbit.enabled=true;camera.position.set(7,5.3,8);camera.rotation.set(0,0,0);orbit.target.set(0,1.25,0);orbit.update();document.getElementById('orbit').classList.add('active');document.getElementById('walk').classList.remove('active')};
+document.getElementById('home').onclick=()=>{walk.unlock();walkMode=false;mobileWalk=false;document.getElementById('walkPad').style.display='none';document.getElementById('lookHint').style.display='none';orbit.enabled=true;camera.position.set(10.5,7.2,13.5);camera.rotation.set(0,0,0);orbit.target.set(0,1.25,0);orbit.update();document.getElementById('orbit').classList.add('active');document.getElementById('walk').classList.remove('active')};
 function resize(){const w=root.clientWidth,h=root.clientHeight;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h)}window.addEventListener('resize',resize);resize();
 const clock=new THREE.Clock();function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.05);if(walkMode&&(walk.isLocked||mobileWalk)){direction.set(Number(keys.KeyD||keys.ArrowRight)-Number(keys.KeyA||keys.ArrowLeft),0,Number(keys.KeyS||keys.ArrowDown)-Number(keys.KeyW||keys.ArrowUp)).normalize();if(direction.lengthSq()){const speed=2.8*dt;if(mobileWalk){const forward=new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion);forward.y=0;forward.normalize();const right=new THREE.Vector3(1,0,0).applyQuaternion(camera.quaternion);right.y=0;right.normalize();camera.position.addScaledVector(right,direction.x*speed);camera.position.addScaledVector(forward,-direction.z*speed)}else{walk.moveRight(direction.x*speed);walk.moveForward(direction.z*speed)}camera.position.y=1.65;}}orbit.update();renderer.render(scene,camera)}animate();window.__vastora3DReady?.();
 </script>
