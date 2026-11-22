@@ -15,11 +15,38 @@ header{height:80px;padding:0 6.5vw;display:flex;align-items:center;justify-conte
 main{max-width:1320px;margin:auto;padding:55px 6.5vw 100px}.back{font-size:9px;letter-spacing:.14em;text-transform:uppercase}.product-layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr);gap:7vw;margin-top:35px;align-items:start}.image-wrap{background:#e6e0d5;overflow:hidden;min-height:420px;position:sticky;top:24px}.image-wrap img{width:100%;height:min(72vh,760px);min-height:420px;object-fit:cover;display:block}.eyebrow{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#765B3D}.copy{padding:20px 0}.copy h1{font:clamp(42px,6vw,76px)/.98 var(--serif);font-weight:400;margin:18px 0}.description{font-size:13px;line-height:1.9;color:var(--muted);max-width:520px}.rule{height:1px;background:#29251F22;margin:28px 0}.section-label{font-size:9px;letter-spacing:.16em;text-transform:uppercase;margin:0 0 12px}.variant-list{display:flex;flex-wrap:wrap;gap:8px}.variant-list button{border:1px solid var(--champagne);background:transparent;padding:10px 13px;font-size:10px;cursor:pointer}.variant-list button[aria-pressed=true]{background:var(--ink);color:var(--paper)}.variant-list:empty{display:none}.meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}.meta{padding:17px 0;border-top:1px solid #29251F22}.meta b{display:block;font-size:9px;letter-spacing:.13em;text-transform:uppercase;margin-bottom:8px}.meta span{font-size:11px;line-height:1.7;color:var(--muted)}.enquire{display:inline-flex;margin-top:28px;padding:16px 23px;background:var(--ink);color:var(--paper);font-size:9px;letter-spacing:.15em;text-transform:uppercase}.note{font-size:10px;line-height:1.8;color:var(--muted);margin-top:18px}footer{padding:25px 6.5vw;background:var(--ink);color:#E7DFD2;display:flex;justify-content:space-between;font-size:8px;letter-spacing:.15em;text-transform:uppercase}
 @media(max-width:760px){header{height:auto;min-height:72px;padding:16px 5vw}nav{gap:12px;font-size:8px}main{padding:32px 5vw 70px}.product-layout{grid-template-columns:1fr;gap:28px;margin-top:22px}.image-wrap{position:relative;top:auto;min-height:280px}.image-wrap img{height:68vw;min-height:280px}.copy{padding:0}.copy h1{font-size:54px}.meta-grid{grid-template-columns:1fr 1fr}footer{gap:15px;flex-wrap:wrap}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* VASTORA PRODUCT DETAIL — considered product editorial */
+header{height:88px;padding-inline:7vw;background:rgba(240,236,227,.96);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);position:sticky;top:0;z-index:10}
+.brand{display:flex;align-items:center;gap:13px}
+nav a{position:relative}
+nav a:after{content:"";position:absolute;left:0;right:100%;bottom:-8px;height:1px;background:#B5A080;transition:right .3s}
+nav a:hover:after{right:0}
+main{padding-top:48px}
+.back{display:inline-flex;align-items:center;gap:12px;color:#625C52;transition:color .2s}
+.back:hover{color:#8B6D4B}
+.product-layout{gap:clamp(42px,7vw,100px);margin-top:28px}
+.image-wrap{background:#E5DED2;box-shadow:0 24px 65px #29251F12}
+.image-wrap img{filter:saturate(.84);transition:transform 1s,filter .5s}
+.image-wrap:hover img{transform:scale(1.018);filter:saturate(1)}
+.copy h1{letter-spacing:-.03em}
+.description{font-size:14px;line-height:2;color:#625C52}
+.rule{background:#B5A08055}
+.meta{border-color:#B5A08055}
+.meta b{letter-spacing:.16em}
+.enquire{background:#29251F;border:1px solid #29251F;transition:background .25s,color .25s}
+.enquire:hover{background:transparent;color:#29251F}
+.note{border-left:2px solid #B5A080;padding-left:14px}
+.variant-list button{transition:background .2s,color .2s}
+.variant-list button:hover{background:#29251F;color:#F0ECE3}
+footer{padding-block:32px}
+@media(max-width:760px){header{height:74px;padding-inline:6vw}main{padding:30px 5vw 70px}.product-layout{gap:28px}.image-wrap{box-shadow:0 15px 35px #29251F10}.copy h1{font-size:54px}}
+
 </style>
 </head>
 <body>
 <div class="announcement">The art of better living</div>
-<header><a class="brand" href="index.html">VASTORA<small>THE ART OF BETTER LIVING</small></a><nav><a href="index.html">Home</a><a href="products.html">Products</a><a href="index.html#contact">Enquire</a></nav></header>
+<header><a class="brand" href="index.html"><span class="monogram">V</span><span>VASTORA<small>THE ART OF BETTER LIVING</small></span></a><nav><a href="index.html">Home</a><a href="products.html">Products</a><a href="index.html#contact">Enquire</a></nav></header>
 <main>
 <a class="back" href="products.html">← Back to the collection</a>
 <div id="product-content" class="product-layout" hidden>
