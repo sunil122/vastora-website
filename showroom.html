@@ -12,7 +12,7 @@
 </head>
 <body>
 <main class="stage" id="stage">
-<img class="room-photo" id="roomPhoto" alt="Photorealistic luxury living room" src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=2400&q=90">
+<img class="room-photo" id="roomPhoto" alt="Photorealistic luxury living room" src="https://images.pexels.com/photos/8082202/pexels-photo-8082202.jpeg?auto=compress&cs=tinysrgb&w=2400">
 <div class="shade"></div>
 <button class="hotspot" data-item="sofa" aria-label="Explore sofa">+</button><button class="hotspot" data-item="table" aria-label="Explore coffee table">+</button><button class="hotspot" data-item="lighting" aria-label="Explore lighting">+</button><button class="hotspot" data-item="media" aria-label="Explore media wall">+</button><button class="hotspot" data-item="shelving" aria-label="Explore shelving">+</button>
 </main>
@@ -31,7 +31,7 @@
 <div class="top-actions"><button id="fullscreen">⛶ Fullscreen</button><button class="gold" id="contact">Let's Talk ↗</button></div>
 <script>
 const rooms={
- living:{label:'Living Room',image:'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=2400&q=90',items:{sofa:'Sofa',table:'Coffee Table',lighting:'Chandelier & Lighting',media:'TV Feature Wall',shelving:'Display Shelves'}},
+ living:{label:'Living Room',image:'https://images.pexels.com/photos/8082202/pexels-photo-8082202.jpeg?auto=compress&cs=tinysrgb&w=2400',items:{sofa:'Sofa',table:'Coffee Table',lighting:'Chandelier & Lighting',media:'TV Feature Wall',shelving:'Display Shelves'}},
  bedroom:{label:'Bedroom',image:'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=2400&q=90',items:{sofa:'Bed & Headboard',table:'Bedside Table',lighting:'Bedroom Lighting',media:'Dresser',shelving:'Wardrobe Storage'}},
  kitchen:{label:'Kitchen',image:'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2400&q=90',items:{sofa:'Kitchen Cabinets',table:'Island Counter',lighting:'Pendant Lighting',media:'Appliances',shelving:'Open Shelves'}},
  dining:{label:'Dining Room',image:'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=2400&q=90',items:{sofa:'Dining Chairs',table:'Dining Table',lighting:'Dining Chandelier',media:'Sideboard',shelving:'Display Cabinet'}},
@@ -72,6 +72,7 @@ stage.addEventListener('dragstart',event=>event.preventDefault());
 stage.addEventListener('pointerdown',event=>{
   if(panel.classList.contains('open')||event.target.closest('.hotspot'))return;
   pointerStartX=event.clientX;pointerStartY=event.clientY;pointerActive=true;
+  try{stage.setPointerCapture(event.pointerId)}catch{}
   stage.classList.add('dragging');
 });
 function finishRoomSwipe(event){
@@ -85,6 +86,7 @@ function finishRoomSwipe(event){
 }
 stage.addEventListener('pointerup',finishRoomSwipe);
 stage.addEventListener('pointercancel',()=>{pointerActive=false;stage.classList.remove('dragging')});
+stage.addEventListener('lostpointercapture',()=>{pointerActive=false;stage.classList.remove('dragging')});
 document.querySelectorAll('.room-choice').forEach(b=>b.addEventListener('click',()=>setRoom(b.dataset.room)));
 document.querySelectorAll('.hotspot').forEach(b=>b.addEventListener('click',()=>openItem(b.dataset.item,b)));
 document.getElementById('closePanel').onclick=()=>{panel.classList.remove('open');resetHotspotZoom()};document.getElementById('backRoom').onclick=()=>{panel.classList.remove('open');resetHotspotZoom();status.textContent='Full room view restored'};
@@ -94,7 +96,7 @@ document.getElementById('reset').onclick=()=>{panel.classList.remove('open');res
 document.getElementById('rotate').onclick=()=>{rotation=(rotation+90)%360;renderTransform();status.textContent='Image view rotated · '+rotation+'°'};
 document.getElementById('fullscreen').onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()};
 document.getElementById('contact').onclick=()=>location.href='index.html#contact';
-document.getElementById('walkRoomName').textContent=rooms[activeRoom].label;document.getElementById('walkRoomCount').textContent='01 / 05';status.textContent='Full room view · swipe or drag to walk through · tap a gold + to customise';
+document.getElementById('walkRoomName').textContent=rooms[activeRoom].label;document.getElementById('walkRoomCount').textContent='01 / 05';status.textContent='New wide-angle room photo · swipe left/right or drag to move between rooms · tap a gold + to customise';
 document.addEventListener('keydown',event=>{if(event.key==='ArrowRight'&&!panel.classList.contains('open'))walkRoom(1);if(event.key==='ArrowLeft'&&!panel.classList.contains('open'))walkRoom(-1);if(event.key==='Escape'){panel.classList.remove('open');resetHotspotZoom()}});
 
 
