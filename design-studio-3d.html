@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vastora | 3D Design Studio</title>
+<style>
+:root{--gold:#d4ad70;--ink:#171411;--panel:#211d19;--muted:#b9afa2;--line:#51463a}
+*{box-sizing:border-box}body{margin:0;background:#100e0c;color:#f6f0e7;font:14px/1.4 Inter,system-ui,sans-serif;overflow:hidden}
+#view{position:fixed;inset:0 310px 0 250px;background:#26211b}canvas{display:block;width:100%;height:100%}
+header{position:fixed;z-index:5;top:14px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:20px;padding:11px 20px;border:1px solid #ffffff24;border-radius:40px;background:#171411c9;backdrop-filter:blur(16px);white-space:nowrap}
+.brand{position:fixed;z-index:5;top:20px;left:24px;font-size:25px;letter-spacing:8px}.brand small{display:block;font-size:10px;letter-spacing:1px;color:#d8c9b4}
+aside{position:fixed;z-index:4;top:0;bottom:0;width:250px;padding:90px 16px 20px;background:#191612ed;border-right:1px solid var(--line);overflow:auto}
+#inspector{right:0;left:auto;width:310px;border-right:0;border-left:1px solid var(--line);padding-top:88px}
+h2{font-size:17px;margin:0 0 7px}h3{font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gold);margin:23px 0 10px}
+.muted{color:var(--muted);font-size:12px}.item{width:100%;display:flex;justify-content:space-between;align-items:center;text-align:left;padding:11px 12px;margin:5px 0;border:1px solid transparent;border-radius:9px;background:#2a241e;color:#f4eee5;cursor:pointer}
+.item.active{border-color:var(--gold);background:#403326}.item small{color:var(--muted)}
+button,select{font:inherit}button{cursor:pointer}.swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.swatch{height:42px;border-radius:8px;border:2px solid #ffffff30}.swatch.active{outline:2px solid var(--gold);outline-offset:2px}
+select{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:#302920;color:white}
+.action{border:1px solid var(--gold);background:var(--gold);color:#21180f;border-radius:8px;padding:10px 12px;font-weight:600}.ghost{border:1px solid var(--line);background:#302920;color:white;border-radius:8px;padding:9px 12px}
+.row{display:flex;gap:8px;align-items:center}.row>*{flex:1}
+#toolbar{position:fixed;z-index:5;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:8px;padding:9px;border-radius:30px;background:#171411dd;border:1px solid #ffffff24}
+#toolbar button{border:1px solid #6b5b49;background:#2b241d;color:#fff;border-radius:22px;padding:10px 14px}
+#toolbar button.active{background:var(--gold);color:#21180f}
+#tip{position:fixed;z-index:5;bottom:25px;left:270px;color:#eee4d6;background:#171411b8;padding:9px 13px;border-radius:20px;font-size:12px}
+#status{font-size:12px;color:#b6a995;margin-top:12px;min-height:34px}
+@media(max-width:850px){#view{inset:62px 0 190px 0}.brand{top:8px;left:12px;font-size:17px}header{top:8px;left:auto;right:8px;transform:none;padding:8px;font-size:11px;gap:8px}aside{top:auto;bottom:0;width:50%;height:190px;padding:12px;overflow:auto;border-top:1px solid var(--line)}#inspector{left:auto;right:0;height:190px;padding:12px;border-left:1px solid var(--line)}aside h3{margin:10px 0 6px}#toolbar{bottom:198px}#tip{display:none}.item{padding:7px;font-size:12px;margin:3px 0}.swatch{height:28px}}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.166.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/"}}</script>
+</head>
+<body>
+<div class="brand">VASTORA<small>DESIGN · EXPERIENCE · LIVE BETTER</small></div>
+<header><b>3D DESIGN STUDIO</b><span class="muted">Living room · Editable scene</span></header>
+<aside id="objects"><h2>Room objects</h2><p class="muted">Select any item to edit it independently.</p><h3>Furniture</h3><div id="furniture"></div><h3>Architecture</h3><div id="architecture"></div></aside>
+<div id="view"></div>
+<aside id="inspector"><h2 id="selectedName">Select an object</h2><p class="muted" id="selectedDesc">Every furniture piece, wall and floor is a separate 3D object.</p>
+<h3>Finish / material</h3><div class="swatches" id="swatches"></div>
+<h3>Replace furniture</h3><select id="replace"><option value="">Choose a model variation</option></select>
+<h3>Adjust object</h3><label class="muted">Scale</label><input id="scale" type="range" min=".7" max="1.35" step=".01" value="1" style="width:100%;accent-color:#d4ad70">
+<div class="row" style="margin-top:12px"><button class="ghost" id="rotate">Rotate 15°</button><button class="ghost" id="reset">Reset</button></div><div id="status">Select an item in the list or click it in the 3D room.</div></aside>
+<div id="tip">Drag to orbit · Scroll to zoom · Select an object to customize</div>
+<div id="toolbar"><button id="orbit" class="active">Orbit view</button><button id="walk">Walk mode</button><button id="home">Reset view</button></div>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {PointerLockControls} from 'three/addons/controls/PointerLockControls.js';
+const root=document.getElementById('view');
+const scene=new THREE.Scene();scene.background=new THREE.Color('#b7b0a6');scene.fog=new THREE.Fog('#b7b0a6',18,38);
+const camera=new THREE.PerspectiveCamera(55,1,.1,100);camera.position.set(7,5.3,8);
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;root.appendChild(renderer.domElement);
+const orbit=new OrbitControls(camera,renderer.domElement);orbit.target.set(0,1.25,0);orbit.enableDamping=true;orbit.maxPolarAngle=Math.PI*.49;orbit.minDistance=3;orbit.maxDistance=17;
+const walk=new PointerLockControls(camera,renderer.domElement);let walkMode=false;const keys={};
+scene.add(new THREE.HemisphereLight(0xffead0,0x55483a,2.0));
+const sun=new THREE.DirectionalLight(0xffe5bf,3.0);sun.position.set(-4,9,5);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-10;sun.shadow.camera.right=10;sun.shadow.camera.top=10;sun.shadow.camera.bottom=-10;scene.add(sun);
+const warm=new THREE.PointLight(0xffbd72,55,12);warm.position.set(-3,3.3,-2.8);scene.add(warm);
+const mats={};
+function mat(name,color,rough=.55,metal=0){return mats[name]=new THREE.MeshStandardMaterial({color,roughness:rough,metalness:metal})}
+mat('cream','#d7c8b5',.82);mat('sand','#b8a18a',.8);mat('taupe','#806c5b',.78);mat('walnut','#573722',.43);mat('dark walnut','#302016',.38);mat('brass','#b58b4d',.27,.75);mat('marble','#ded8cf',.22);mat('charcoal','#292725',.45);mat('olive','#59604a',.8);mat('white','#f0e9df',.7);mat('stone','#b5aaa0',.85);mat('glass','#9db8bd',.16,.2);
+const selectable=[];const catalog={};
+function mesh(geo,material,parent,x=0,y=0,z=0){const m=new THREE.Mesh(geo,material);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m}
+function box(parent,w,h,d,material,x,y,z,r=.06){let geo=new THREE.BoxGeometry(w,h,d);let m=mesh(geo,material,parent,x,y,z);if(r){const e=new THREE.EdgesGeometry(geo);/* retain clean bevel-free silhouette */}return m}
+function group(id,label,kind,desc){const g=new THREE.Group();g.name=label;g.userData={id,label,kind,desc,baseScale:1};scene.add(g);selectable.push(g);catalog[id]=g;return g}
+function cushion(parent,w,h,d,material,x,y,z){const m=mesh(new THREE.BoxGeometry(w,h,d),material,parent,x,y,z);m.geometry.computeVertexNormals();return m}
+function sofa(variant='sectional'){
+ const g=group('sofa','Sectional sofa','furniture','Main sofa · independently replaceable and recolorable');
+ const width=variant==='loveseat'?2.1:3.55;
+ box(g,width,.34,1.05,mats.sand,0,.55,0);
+ box(g,width,.62,.28,mats.cream,0,.99,-.39);
+ box(g,.25,.64,1.05,mats.cream,-width/2+.12,.76,0);
+ box(g,.25,.64,1.05,mats.cream,width/2-.12,.76,0);
+ const count=variant==='loveseat'?2:3;
+ for(let i=0;i<count;i++){const x=(i-(count-1)/2)*(width/count);cushion(g,width/count-.04,.18,.86,mats.cream,x,.79,.04);cushion(g,width/count-.05,.52,.19,mats.sand,x,1.08,-.43)}
+ for(let i=0;i<5;i++){const p=mesh(new THREE.CylinderGeometry(.035,.045,.22,12),mats.dark,wrapper(g),-width/2+.2+i*(width-.4)/4,.12,.34)}
+ function wrapper(p){return p}
+ const pillowColors=[mats.taupe,mats.olive,mats.cream];for(let i=0;i<3;i++){const p=box(g,.48,.48,.17,pillowColors[i],-1.05+i*.88,1.17,-.23);p.rotation.z=(i-1)*-.12}
+ return g;
+}
+function armchair(variant='lounge'){
+ const g=group('armchair','Lounge armchair','furniture','Accent chair · independent upholstery and model variants');
+ const w=variant==='wide'?1.2:.95;
+ box(g,w,.3,.92,mats.taupe,0,.55,0);box(g,w,.55,.2,mats.sand,0,.94,-.34);
+ box(g,.16,.52,.9,mats.sand,-w/2+.08,.77,0);box(g,.16,.52,.9,mats.sand,w/2-.08,.77,0);
+ box(g,w-.22,.16,.68,mats.cream,0,.76,.06);
+ for(let x of [-w/2+.16,w/2-.16])for(let z of [-.32,.32])mesh(new THREE.CylinderGeometry(.035,.045,.32,12),mats.dark,g,x,.18,z);
+ return g;
+}
+function table(variant='oval'){
+ const g=group('coffee','Marble coffee table','furniture','Coffee table · stone top and base can be restyled');
+ const geo=variant==='round'?new THREE.CylinderGeometry(.78,.78,.13,64):new THREE.BoxGeometry(1.85,.13,1.05);
+ const top=mesh(geo,mats.marble,g,0,.72,0);if(variant==='oval')top.scale.set(1,.98,1);
+ mesh(new THREE.CylinderGeometry(.48,.55,.55,32),mats.dark,g,0,.37,0);
+ return g;
+}
+function sideboard(){const g=group('sideboard','Media console','furniture','Wall console · walnut cabinetry with brass details');box(g,2.5,.52,.48,mats.walnut,0,.38,0);for(let i=0;i<4;i++)box(g,.015,.38,.012,mats.brass,-.9+i*.6,.39,.247);box(g,2.6,.06,.55,mats.dark,0,.68,0);return g}
+function plant(){const g=group('plant','Indoor planter','furniture','Decorative planter and foliage');mesh(new THREE.CylinderGeometry(.28,.22,.55,32),mats.charcoal,g,0,.28,0);for(let i=0;i<9;i++){const a=i*2.4,r=.25+(i%3)*.08;const leaf=mesh(new THREE.SphereGeometry(.13,12,10),mats.olive,g,Math.cos(a)*r,.85+(i%4)*.22,Math.sin(a)*r);leaf.scale.set(.65,2.1,.5);leaf.rotation.z=Math.cos(a)*.5;leaf.rotation.x=Math.sin(a)*.5}return g}
+function buildArchitecture(){
+ const floor=group('floor','Marble floor','surface','Floor finish · changes independently from every wall');box(floor,12,.18,12,mats.marble,0,-.12,0,0);
+ const back=group('wall-back','Rear feature wall','surface','Rear wall finish · separate material control');box(back,12,4.5,.18,mats.stone,0,2.13,-5.9,0);
+ const left=group('wall-left','Left wall','surface','Left wall finish · separate material control');box(left,.18,4.5,12,mats.cream,-5.9,2.13,0,0);
+ // walnut vertical feature battens
+ for(let i=0;i<22;i++)box(back,.055,3.8,.08,mats.walnut,-5.1+i*.12,2.15,-5.76,0);
+ // window and glazing on right side
+ box(scene, .06,3.0,4.4,mats.charcoal,5.88,2.05,-1.7,0);
+ const glass=new THREE.MeshStandardMaterial({color:'#9eb8c3',transparent:true,opacity:.23,roughness:.08,metalness:.12});
+ box(scene,.025,2.8,4.15,glass,5.84,2.08,-1.7,0);
+ // trim and ceiling
+ box(scene,12,.14,12,mats.white,0,4.48,0,0);
+}
+buildArchitecture();sofa();armchair();table();sideboard();plant();
+catalog.armchair.position.set(2.1,0,1.1);catalog.coffee.position.set(.1,0,1.65);catalog.sideboard.position.set(0,0,-5.25);catalog.plant.position.set(-4.65,0,-3.8);
+const ambientDecor=new THREE.Group();scene.add(ambientDecor);
+for(let i=0;i<3;i++){const p=mesh(new THREE.SphereGeometry(.055,12,10),mats.brass,ambientDecor,-.2+i*.2,.86,1.65)}
+let selected=null;
+const furnitureEl=document.getElementById('furniture'),archEl=document.getElementById('architecture');
+function listObjects(){furnitureEl.innerHTML='';archEl.innerHTML='';selectable.forEach(o=>{const b=document.createElement('button');b.className='item';b.textContent=o.userData.label;b.onclick=()=>select(o);(o.userData.kind==='surface'?archEl:furnitureEl).appendChild(b)})}
+function select(o){selected=o;document.querySelectorAll('.item').forEach(b=>b.classList.toggle('active',b.textContent===o.userData.label));document.getElementById('selectedName').textContent=o.userData.label;document.getElementById('selectedDesc').textContent=o.userData.desc;document.getElementById('scale').value=o.scale.x;document.getElementById('status').textContent='Editing only: '+o.userData.label;document.getElementById('replace').style.display=o.userData.kind==='furniture'?'block':'none';}
+listObjects();
+const swatchNames=['cream','sand','taupe','walnut','dark walnut','brass','marble','charcoal','olive','white','stone'];
+const swatches=document.getElementById('swatches');swatchNames.forEach(n=>{const b=document.createElement('button');b.className='swatch';b.title=n;b.style.background=mats[n].color.getStyle();b.onclick=()=>applyMaterial(n);swatches.appendChild(b)});
+function applyMaterial(n){if(!selected)return;selected.traverse(o=>{if(o.isMesh){o.material=mats[n]}});document.querySelectorAll('.swatch').forEach(b=>b.classList.toggle('active',b.title===n));document.getElementById('status').textContent='Applied '+n+' finish to '+selected.userData.label+'.'}
+document.getElementById('replace').onchange=e=>{if(!selected||!e.target.value)return;const id=selected.userData.id,position=selected.position.clone(),rotation=selected.rotation.clone(),scale=selected.scale.clone();scene.remove(selected);selectable.splice(selectable.indexOf(selected),1);delete catalog[id];let next=id==='sofa'?sofa(e.target.value):id==='armchair'?armchair(e.target.value):id==='coffee'?table(e.target.value):null;if(next){next.position.copy(position);next.rotation.copy(rotation);next.scale.copy(scale);select(next);listObjects();document.getElementById('status').textContent='Replaced with '+e.target.value+'.'}e.target.value='';};
+const replace=document.getElementById('replace');replace.innerHTML='<option value="">Choose a model variation</option><optgroup label="Sofa"><option value="sectional">Large sectional</option><option value="loveseat">Compact loveseat</option></optgroup><optgroup label="Armchair"><option value="lounge">Lounge chair</option><option value="wide">Wide accent chair</option></optgroup><optgroup label="Coffee table"><option value="oval">Rectangular marble</option><option value="round">Round marble</option></optgroup>';
+document.getElementById('scale').oninput=e=>{if(selected)selected.scale.setScalar(+e.target.value)};
+document.getElementById('rotate').onclick=()=>{if(selected)selected.rotation.y+=Math.PI/12};
+document.getElementById('reset').onclick=()=>{if(selected){selected.scale.setScalar(1);selected.rotation.set(0,0,0);document.getElementById('scale').value=1}};
+const ray=new THREE.Raycaster(),pointer=new THREE.Vector2();
+renderer.domElement.addEventListener('click',e=>{if(walkMode)return;const r=renderer.domElement.getBoundingClientRect();pointer.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);ray.setFromCamera(pointer,camera);const hits=ray.intersectObjects(selectable.flatMap(g=>g.children),true);if(hits.length){let o=hits[0].object;while(o.parent&&!o.userData.id)o=o.parent;if(o.userData.id)select(o)}});
+document.getElementById('orbit').onclick=()=>{walkMode=false;walk.unlock();orbit.enabled=true;document.getElementById('orbit').classList.add('active');document.getElementById('walk').classList.remove('active')};
+document.getElementById('walk').onclick=()=>{walkMode=true;orbit.enabled=false;walk.lock();document.getElementById('walk').classList.add('active');document.getElementById('orbit').classList.remove('active')};
+const velocity=new THREE.Vector3(),direction=new THREE.Vector3();window.addEventListener('keydown',e=>keys[e.code]=true);window.addEventListener('keyup',e=>keys[e.code]=false);
+document.getElementById('home').onclick=()=>{walk.unlock();walkMode=false;orbit.enabled=true;camera.position.set(7,5.3,8);orbit.target.set(0,1.25,0);orbit.update();document.getElementById('orbit').classList.add('active');document.getElementById('walk').classList.remove('active')};
+function resize(){const w=root.clientWidth,h=root.clientHeight;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h)}window.addEventListener('resize',resize);resize();
+const clock=new THREE.Clock();function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.05);if(walkMode&&walk.isLocked){direction.set(Number(keys.KeyD||keys.ArrowRight)-Number(keys.KeyA||keys.ArrowLeft),0,Number(keys.KeyS||keys.ArrowDown)-Number(keys.KeyW||keys.ArrowUp)).normalize();if(direction.lengthSq()){const speed=2.8*dt;walk.moveRight(direction.x*speed);walk.moveForward(direction.z*speed);camera.position.y=1.65;}}orbit.update();renderer.render(scene,camera)}animate();
+</script>
+</body></html>
