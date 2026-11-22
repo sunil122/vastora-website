@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Product details | VASTORA — The Art of Better Living</title>
+<meta name="description" content="Discover product details and enquire with Vastora.">
+<meta name="theme-color" content="#29251F">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Italiana&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#29251F;--paper:#F0ECE3;--white:#F8F5EE;--stone:#D5CABB;--champagne:#B5A080;--muted:#625C52;--serif:'Italiana',Georgia,serif;--sans:'DM Sans',Arial,sans-serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans)}a{color:inherit;text-decoration:none}button{font:inherit}
+.announcement{height:29px;background:var(--ink);color:#E7DFD2;display:grid;place-items:center;font-size:8px;letter-spacing:.23em;text-transform:uppercase}
+header{height:80px;padding:0 6.5vw;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #29251F22}.brand{font-size:14px;letter-spacing:.34em;font-weight:600}.brand small{display:block;font-size:7px;letter-spacing:.28em;color:var(--muted);margin-top:5px}nav{display:flex;gap:28px;font-size:10px;letter-spacing:.1em}nav a:hover,.back:hover{color:#765B3D}
+main{max-width:1320px;margin:auto;padding:55px 6.5vw 100px}.back{font-size:9px;letter-spacing:.14em;text-transform:uppercase}.product-layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr);gap:7vw;margin-top:35px;align-items:start}.image-wrap{background:#e6e0d5;overflow:hidden;min-height:420px;position:sticky;top:24px}.image-wrap img{width:100%;height:min(72vh,760px);min-height:420px;object-fit:cover;display:block}.eyebrow{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#765B3D}.copy{padding:20px 0}.copy h1{font:clamp(42px,6vw,76px)/.98 var(--serif);font-weight:400;margin:18px 0}.description{font-size:13px;line-height:1.9;color:var(--muted);max-width:520px}.rule{height:1px;background:#29251F22;margin:28px 0}.section-label{font-size:9px;letter-spacing:.16em;text-transform:uppercase;margin:0 0 12px}.variant-list{display:flex;flex-wrap:wrap;gap:8px}.variant-list button{border:1px solid var(--champagne);background:transparent;padding:10px 13px;font-size:10px;cursor:pointer}.variant-list button[aria-pressed=true]{background:var(--ink);color:var(--paper)}.variant-list:empty{display:none}.meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}.meta{padding:17px 0;border-top:1px solid #29251F22}.meta b{display:block;font-size:9px;letter-spacing:.13em;text-transform:uppercase;margin-bottom:8px}.meta span{font-size:11px;line-height:1.7;color:var(--muted)}.enquire{display:inline-flex;margin-top:28px;padding:16px 23px;background:var(--ink);color:var(--paper);font-size:9px;letter-spacing:.15em;text-transform:uppercase}.note{font-size:10px;line-height:1.8;color:var(--muted);margin-top:18px}footer{padding:25px 6.5vw;background:var(--ink);color:#E7DFD2;display:flex;justify-content:space-between;font-size:8px;letter-spacing:.15em;text-transform:uppercase}
+@media(max-width:760px){header{height:auto;min-height:72px;padding:16px 5vw}nav{gap:12px;font-size:8px}main{padding:32px 5vw 70px}.product-layout{grid-template-columns:1fr;gap:28px;margin-top:22px}.image-wrap{position:relative;top:auto;min-height:280px}.image-wrap img{height:68vw;min-height:280px}.copy{padding:0}.copy h1{font-size:54px}.meta-grid{grid-template-columns:1fr 1fr}footer{gap:15px;flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="announcement">The art of better living</div>
+<header><a class="brand" href="index.html">VASTORA<small>THE ART OF BETTER LIVING</small></a><nav><a href="index.html">Home</a><a href="products.html">Products</a><a href="index.html#contact">Enquire</a></nav></header>
+<main>
+<a class="back" href="products.html">← Back to the collection</a>
+<div id="product-content" class="product-layout" hidden>
+<div class="image-wrap"><img id="product-image" src="" alt=""></div>
+<div class="copy"><div class="eyebrow" id="product-category"></div><h1 id="product-title"></h1><p class="description" id="product-description"></p>
+<div class="rule"></div><div id="variant-section" hidden><p class="section-label">Available options</p><div class="variant-list" id="variant-list"></div><div class="rule"></div></div>
+<div class="meta-grid" id="product-meta"></div>
+<a class="enquire" id="product-enquire" href="#">Enquire about this product ↗</a>
+<p class="note">Product imagery is illustrative until replaced with approved product photography. Specifications, materials, dimensions, finish options, pricing and availability are confirmed individually with the Vastora team.</p>
+</div></div>
+<div id="not-found" hidden><h1 style="font:48px var(--serif)">Product not found</h1><p class="description">This product may have moved. Return to the collection to explore available products.</p><a class="enquire" href="products.html">Browse products ↗</a></div>
+</main>
+<footer><span>© 2026 VASTORA. THE ART OF BETTER LIVING.</span><a href="index.html">Return to Vastora home ↑</a></footer>
+<script>
+(async()=>{const slug=new URLSearchParams(location.search).get('product');const content=document.getElementById('product-content'),missing=document.getElementById('not-found');try{const response=await fetch('product-data.json');if(!response.ok)throw new Error('catalogue unavailable');const data=await response.json();const p=data.products&&data.products[slug];if(!p){missing.hidden=false;return}
+document.title=p.title+' | VASTORA';document.getElementById('product-category').textContent=p.category.replace(/-/g,' ')+' collection';document.getElementById('product-title').textContent=p.title;document.getElementById('product-description').textContent=p.description;const img=document.getElementById('product-image');img.src=p.image;img.alt=p.alt||p.title;
+const enquiry='mailto:hello@vastoraliving.com?subject='+encodeURIComponent('Vastora product enquiry - '+p.title);document.getElementById('product-enquire').href=enquiry;
+const variants=(p.variants||[]).filter(v=>v&&v.label&&v.image);const list=document.getElementById('variant-list');if(variants.length){document.getElementById('variant-section').hidden=false;variants.forEach((v,i)=>{const b=document.createElement('button');b.type='button';b.textContent=v.label;b.setAttribute('aria-pressed',String(i===0));b.addEventListener('click',()=>{list.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));img.src=v.image;img.alt=v.alt||p.title+' — '+v.label});list.append(b)})}
+const fields=[['Materials',p.materials],['Finishes',p.finishes],['Dimensions',p.dimensions],['Personalisation',p.personalisation]];const meta=document.getElementById('product-meta');fields.forEach(([label,value])=>{if(!value||(Array.isArray(value)&&!value.length))return;const item=document.createElement('div');item.className='meta';const b=document.createElement('b');b.textContent=label;const span=document.createElement('span');span.textContent=Array.isArray(value)?value.join(', '):value;item.append(b,span);meta.append(item)});content.hidden=false;
+}catch(e){missing.hidden=false}})();
+</script>
+</body></html>
