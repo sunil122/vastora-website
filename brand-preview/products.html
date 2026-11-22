@@ -179,11 +179,12 @@ nav a:not(.navcta):hover:after{right:0}
 </main>
 <footer><span>© 2026 VASTORA. THE ART OF BETTER LIVING.</span><a href="index.html">Return to Vastora home ↑</a></footer>
 <script>
-const filters=[...document.querySelectorAll('[data-filter]')],products=[...document.querySelectorAll('.product')],pagination=document.getElementById('pagination');
-const pageSize=10;let activeFilter='all',currentPage=1;
-function visibleProducts(){return products.filter(card=>activeFilter==='all'||card.dataset.category===activeFilter)}
+const filters=[...document.querySelectorAll('[data-filter]')],products=[...document.querySelectorAll('.product')],pagination=document.getElementById('pagination'),searchInput=document.getElementById('catalogueSearch'),resultCount=document.getElementById('catalogueResultCount');
+const pageSize=10;let activeFilter='all',currentPage=1,searchTerm='';
+function visibleProducts(){return products.filter(card=>(activeFilter==='all'||card.dataset.category===activeFilter)&&(!searchTerm||(card.innerText+' '+card.dataset.category).toLowerCase().includes(searchTerm)))}
 function renderProducts(){
  const matches=visibleProducts(),totalPages=Math.max(1,Math.ceil(matches.length/pageSize));
+ if(resultCount)resultCount.textContent=searchTerm?matches.length+' matching products':matches.length+' products in this collection';
  currentPage=Math.min(currentPage,totalPages);
  const start=(currentPage-1)*pageSize;
  products.forEach(card=>card.hidden=true);
@@ -199,6 +200,7 @@ function renderProducts(){
  const status=document.createElement('div');status.className='page-status';status.setAttribute('aria-live','polite');status.textContent='Showing '+(start+1)+'–'+Math.min(start+pageSize,matches.length)+' of '+matches.length+' products · Page '+currentPage+' of '+totalPages;pagination.append(status);
 }
 filters.forEach(button=>button.addEventListener('click',()=>{activeFilter=button.dataset.filter;currentPage=1;filters.forEach(b=>b.setAttribute('aria-pressed',String(b===button)));renderProducts()}));
+searchInput?.addEventListener('input',()=>{searchTerm=searchInput.value.trim().toLowerCase();currentPage=1;renderProducts()});
 renderProducts();
 
 const quickDialog=document.createElement('div');
@@ -261,6 +263,4 @@ quickDialog.querySelector('.more-details-button').addEventListener('click',()=>{
 
 (()=>{const nav=document.getElementById("primary-navigation"),menu=document.querySelector(".menu");if(!nav||!menu)return;nav.addEventListener("click",e=>{if(e.target.closest("a")){nav.classList.remove("open");menu.setAttribute("aria-expanded","false");menu.setAttribute("aria-label","Open navigation")}});document.addEventListener("keydown",e=>{if(e.key==="Escape"&&nav.classList.contains("open")){nav.classList.remove("open");menu.setAttribute("aria-expanded","false");menu.setAttribute("aria-label","Open navigation");menu.focus()}})})();
 </script>
-<script>
-(()=>{const input=document.getElementById('catalogueSearch');if(!input)return;const cards=[...document.querySelectorAll('[data-product-id]')];const count=document.getElementById('catalogueResultCount');const pagination=document.getElementById('pagination');const filter=()=>{const q=input.value.trim().toLowerCase();let shown=0;cards.forEach(card=>{const text=(card.innerText+' '+card.dataset.category).toLowerCase();const match=!q||text.includes(q);card.dataset.searchHidden=match?'false':'true';if(match)shown++});if(count)count.textContent=shown+' matching products';if(pagination&&q)pagination.hidden=true;};input.addEventListener('input',filter);})();
-</script></body></html>
+</body></html>
