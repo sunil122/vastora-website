@@ -69,8 +69,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 <div class="announcement">A world of considered living · Discover Vastora</div>
 <header>
 <a class="brand" href="#home" aria-label="Vastora home"><span class="monogram">V</span><span class="brandword">VASTORA<small>THE ART OF BETTER LIVING</small></span></a>
-<button class="menu" aria-label="Open navigation" aria-expanded="false" onclick="document.querySelector('nav').classList.toggle('open');this.setAttribute('aria-expanded',document.querySelector('nav').classList.contains('open'))">☰</button>
-<nav><a href="#story">Our world</a><a href="#projects">Projects</a><a href="#divisions">Our divisions</a><a href="products.html">Products</a><a href="#showroom">Showroom</a><a class="navcta" href="#contact">Enquire</a></nav>
+<button class="menu" type="button" aria-label="Open navigation" aria-controls="primary-navigation" aria-expanded="false" onclick="const n=document.getElementById('primary-navigation');const open=n.classList.toggle('open');this.setAttribute('aria-expanded',String(open));this.setAttribute('aria-label',open?'Close navigation':'Open navigation')">☰</button>
+<nav id="primary-navigation"><a href="#story">Our world</a><a href="#projects">Projects</a><a href="#divisions">Our divisions</a><a href="products.html">Products</a><a href="#showroom">Showroom</a><a class="navcta" href="#contact">Enquire</a></nav>
 </header>
 <main id="home">
 <section class="hero" aria-label="Vastora featured spaces">
@@ -137,5 +137,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
  start();
 })();
 document.getElementById('enquiryForm')?.addEventListener('submit',function(e){e.preventDefault();const d=new FormData(this);const subject=encodeURIComponent('Vastora enquiry — '+d.get('interest'));const body=encodeURIComponent('Name: '+d.get('name')+'\nEmail: '+d.get('email')+'\nInterest: '+d.get('interest')+'\nLocation: '+d.get('location')+'\n\nProject details:\n'+d.get('message'));window.location.href='mailto:hello@vastoraliving.com?subject='+subject+'&body='+body;});
+</script>
+<script>
+(()=>{const nav=document.getElementById("primary-navigation"),menu=document.querySelector(".menu");if(!nav||!menu)return;nav.addEventListener("click",e=>{if(e.target.closest("a")){nav.classList.remove("open");menu.setAttribute("aria-expanded","false");menu.setAttribute("aria-label","Open navigation")}});document.addEventListener("keydown",e=>{if(e.key==="Escape"&&nav.classList.contains("open")){nav.classList.remove("open");menu.setAttribute("aria-expanded","false");menu.setAttribute("aria-label","Open navigation");menu.focus()}})})();
 </script>
 </body></html>
