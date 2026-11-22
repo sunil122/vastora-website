@@ -63,6 +63,23 @@ footer .footer-links a{color:#F0ECE3}
 .hero .btn.gold{background:#F0ECE3;color:#29251F;border-color:#F0ECE3}
 .hero .btn.outline{background:#29251F66;color:#fff;border-color:#F0ECE3}
 a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #8A6846;outline-offset:3px}
+
+/* Editorial refinement */
+.editorial{display:grid;grid-template-columns:1.12fr .88fr;min-height:590px;background:#E5DED2;overflow:hidden}
+.editorial-image{min-height:590px;overflow:hidden}
+.editorial-image img{width:100%;height:100%;min-height:590px;object-fit:cover;display:block;transition:transform 1.2s cubic-bezier(.2,.65,.2,1)}
+.editorial:hover .editorial-image img{transform:scale(1.025)}
+.editorial-copy{padding:clamp(48px,8vw,120px);display:flex;flex-direction:column;align-items:flex-start;justify-content:center}
+.editorial-copy .eyebrow{color:#79674F}
+.editorial-index{margin-top:45px;color:#786F62;font-size:8px;letter-spacing:.2em;text-transform:uppercase}
+.editorial-copy h2{font:clamp(58px,7vw,100px)/.9 var(--serif);font-weight:400;letter-spacing:-.035em;margin:18px 0 25px}
+.editorial-copy h2 em{color:#8C765B;font-weight:400}
+.editorial-copy p{max-width:390px;color:#575147;font-size:12px;line-height:2;margin:0 0 30px}
+.editorial-copy .textlink{color:#51412F}
+.reveal-ready{opacity:0;transform:translateY(22px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.65,.2,1)}
+.reveal-ready.is-visible{opacity:1;transform:none}
+@media(max-width:760px){.editorial{grid-template-columns:1fr}.editorial-image,.editorial-image img{min-height:340px;height:340px}.editorial-copy{padding:58px 8vw 68px}.editorial-index{margin-top:28px}.editorial-copy h2{font-size:72px}}
+@media(prefers-reduced-motion:reduce){.editorial-image img,.reveal-ready{transition:none}.reveal-ready{opacity:1;transform:none}}
 </style>
 </head>
 <body>
@@ -83,6 +100,10 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 <div class="hero-content"><div class="eyebrow">A new perspective on living</div><h1>The art of<br>living beautifully.</h1><p>Spaces shaped with intention. Objects chosen with care. A considered world where architecture, interiors and exceptional furniture come together.</p><div class="actions"><a class="btn gold" href="#story">Discover Vastora</a><a class="btn outline" href="#collection">Explore the collection</a></div></div><div class="hero-controls" aria-label="Hero slideshow controls"><button class="hero-arrow" type="button" data-hero-prev aria-label="Previous image">‹</button><div class="hero-dots"><button class="hero-dot active" type="button" aria-label="Show slide 1" aria-current="true"></button><button class="hero-dot" type="button" aria-label="Show slide 2"></button><button class="hero-dot" type="button" aria-label="Show slide 3"></button><button class="hero-dot" type="button" aria-label="Show slide 4"></button></div><button class="hero-arrow" type="button" data-hero-next aria-label="Next image">›</button></div><div class="scrollnote">Scroll to discover</div></section>
 <section class="intro" id="story"><div class="intro-image" role="img" aria-label="Sculptural contemporary living space"></div><div class="intro-copy"><div class="eyebrow">The Vastora philosophy</div><h2>Beyond beautiful spaces. A more considered way of living.</h2><p>Vastora brings together the worlds of interior design, architecture, luxury furniture and craftsmanship. Each detail is an opportunity to create something enduring — thoughtful in form, exceptional in material, and personal in feeling.</p><p>From the first architectural line to the final furnishing, we approach every space as a complete expression of how life should feel.</p><a class="textlink" href="#divisions">Discover our world <span>↗</span></a></div></section>
 <section class="manifesto"><div class="eyebrow">Our point of view</div><h2>“Luxury is not simply what you see. It is what you feel, every day.”</h2><p>Considered design · Exceptional detail · Enduring quality</p></section>
+<section class="editorial" aria-label="The Vastora approach">
+  <div class="editorial-image"><img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1800&q=90" alt="Quietly layered contemporary interior with natural materials" loading="lazy"></div>
+  <div class="editorial-copy"><div class="eyebrow">The Vastora edit · 01</div><span class="editorial-index">A considered point of view</span><h2>Less, but<br><em>meaningful.</em></h2><p>We believe a room is never just a collection of objects. It is the balance of light, proportion, texture and the pieces that make a space feel unmistakably yours.</p><a class="textlink" href="products.html">Explore the collection <span>↗</span></a></div>
+</section>
 <section class="divisions" id="divisions"><div class="section-head"><div><div class="eyebrow">One vision. Five expressions.</div><h2>The Vastora world.</h2></div><p>Distinct disciplines, connected by one design philosophy — bringing every element of exceptional living into a single, considered experience.</p></div>
 <div class="division-grid">
 <article class="division"><span class="num">01</span><h3>Vastora Living</h3><p>Interior and exterior design, shaped around the way you live.</p><a href="#contact">Explore ↗</a></article>
