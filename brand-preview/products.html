@@ -27,6 +27,26 @@ footer{background:#29251F;color:#F0ECE3;padding:30px 8vw;display:flex;justify-co
 a:focus-visible,button:focus-visible{outline:2px solid #765B3D;outline-offset:3px}
 @media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.intro{display:block}.intro p{margin-top:18px}.cta{align-items:flex-start;flex-direction:column}}
 @media(max-width:650px){header{height:70px;padding:0 6vw}.brandword{font-size:12px}.menu{display:block}nav{display:none;position:absolute;top:70px;left:0;right:0;padding:22px 7vw 28px;background:var(--paper);border-bottom:1px solid #29251F22;flex-direction:column;align-items:flex-start}nav.open{display:flex}nav a{font-size:10px}.hero{min-height:390px;padding:65px 7vw 55px;background-position:60% center}.hero h1{font-size:58px}.intro{padding:55px 7vw 30px}.filters{padding:0 7vw 25px;gap:7px}.filter{padding:10px 12px;font-size:7px}.grid{padding:0 7vw 22px;grid-template-columns:repeat(2,minmax(0,1fr));gap:25px 10px}.pagination{padding:0 7vw 55px;gap:6px;justify-content:center;flex-wrap:wrap}.page-controls{gap:5px}.page-status{flex:0 0 100%;order:2;text-align:center;white-space:normal;margin-top:5px}.page-btn{min-width:34px;height:36px;padding:0 9px}.product h3{font-size:22px}.product p{font-size:10px}.product-meta{font-size:7px;letter-spacing:.08em}.product-link{font-size:7px}.note{margin:0 7vw 60px;padding:18px}.cta{padding:60px 7vw}footer{padding:25px 7vw;display:block;line-height:2}}
+
+/* Product detail experience */
+.product-link{margin-right:14px}
+.product-detail-trigger{display:inline-block;margin-top:14px;padding:0 0 6px;border:0;border-bottom:1px solid #9A7955;background:none;color:#51412F;font-size:8px;letter-spacing:.15em;text-transform:uppercase;cursor:pointer}
+.product-detail-trigger:hover{color:#927451;border-color:#927451}
+.product-dialog{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:24px;background:#171612B8;backdrop-filter:blur(5px)}
+.product-dialog.is-open{display:flex}
+.product-dialog-panel{position:relative;display:grid;grid-template-columns:1fr 1fr;width:min(960px,100%);max-height:min(700px,90vh);overflow:auto;background:#F0ECE3;color:#29251F;box-shadow:0 25px 90px #0005}
+.product-dialog-image{min-height:520px;background:#D5CABB}
+.product-dialog-image img{width:100%;height:100%;object-fit:cover;display:block}
+.product-dialog-copy{padding:clamp(28px,5vw,64px);display:flex;flex-direction:column;justify-content:center}
+.product-dialog-copy .eyebrow{color:#8B755A}
+.product-dialog-copy h2{font:clamp(38px,5vw,58px)/1 var(--serif);font-weight:400;margin:17px 0}
+.product-dialog-copy p{font-size:12px;line-height:1.9;color:#5F594F}
+.product-dialog-note{margin:18px 0 28px;padding-top:17px;border-top:1px solid #29251F25;font-size:10px;line-height:1.8;color:#625C52}
+.product-dialog-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.product-dialog-actions a{display:inline-flex;padding:14px 18px;background:#29251F;color:#F8F5EE;font-size:8px;letter-spacing:.14em;text-transform:uppercase}
+.product-dialog-close{position:absolute;right:14px;top:14px;width:38px;height:38px;border:1px solid #29251F55;background:#F0ECE3;color:#29251F;font-size:22px;cursor:pointer}
+@media(max-width:680px){.product-dialog{padding:12px}.product-dialog-panel{grid-template-columns:1fr;max-height:92vh}.product-dialog-image{min-height:250px;height:250px}.product-dialog-copy{padding:28px}.product-dialog-copy h2{font-size:42px}}
+@media(prefers-reduced-motion:no-preference){.product-dialog-panel{animation:detail-in .35s ease both}@keyframes detail-in{from{opacity:0;transform:translateY(14px) scale(.99)}to{opacity:1;transform:none}}}
 </style>
 </head>
 <body>
@@ -96,6 +116,33 @@ function renderProducts(){
 }
 filters.forEach(button=>button.addEventListener('click',()=>{activeFilter=button.dataset.filter;currentPage=1;filters.forEach(b=>b.setAttribute('aria-pressed',String(b===button)));renderProducts()}));
 renderProducts();
+
+const detailDialog=document.createElement('div');
+detailDialog.className='product-dialog';
+detailDialog.innerHTML='<div class="product-dialog-panel" role="dialog" aria-modal="true" aria-labelledby="product-dialog-title"><button class="product-dialog-close" type="button" aria-label="Close product details">×</button><div class="product-dialog-image"><img alt=""></div><div class="product-dialog-copy"><div class="eyebrow">Vastora · Collection details</div><h2 id="product-dialog-title"></h2><p class="product-dialog-description"></p><div class="product-dialog-note">Materials, finishes, dimensions, customization and availability are confirmed individually for each selected collection.</div><div class="product-dialog-actions"><a class="product-dialog-enquire" href="#">Enquire about this collection ↗</a></div></div></div>';
+document.body.append(detailDialog);
+const closeDetail=()=>{detailDialog.classList.remove('is-open');document.body.style.overflow='';if(lastDetailTrigger)lastDetailTrigger.focus()};
+let lastDetailTrigger=null;
+const closeButton=detailDialog.querySelector('.product-dialog-close');
+closeButton.addEventListener('click',closeDetail);
+detailDialog.addEventListener('click',event=>{if(event.target===detailDialog)closeDetail()});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&detailDialog.classList.contains('is-open'))closeDetail()});
+products.forEach(card=>{
+ const info=card.querySelector('.product-info'),title=card.querySelector('h3'),description=card.querySelector('.product-info p'),img=card.querySelector('.photo img');
+ if(!info||!title||!description||!img)return;
+ const trigger=document.createElement('button');trigger.type='button';trigger.className='product-detail-trigger';trigger.textContent='View details ↗';
+ trigger.addEventListener('click',()=>{
+  lastDetailTrigger=trigger;
+  detailDialog.querySelector('.product-dialog-image img').src=img.currentSrc||img.src;
+  detailDialog.querySelector('.product-dialog-image img').alt=img.alt;
+  detailDialog.querySelector('#product-dialog-title').textContent=title.textContent;
+  detailDialog.querySelector('.product-dialog-description').textContent=description.textContent;
+  detailDialog.querySelector('.product-dialog-enquire').href='mailto:hello@vastoraliving.com?subject='+encodeURIComponent('Vastora product enquiry - '+title.textContent);
+  detailDialog.classList.add('is-open');document.body.style.overflow='hidden';closeButton.focus();
+ });
+ const enquiry=info.querySelector('.product-link');info.insertBefore(trigger,enquiry||null);
+});
+
 (()=>{const nav=document.getElementById("primary-navigation"),menu=document.querySelector(".menu");if(!nav||!menu)return;nav.addEventListener("click",e=>{if(e.target.closest("a")){nav.classList.remove("open");menu.setAttribute("aria-expanded","false");menu.setAttribute("aria-label","Open navigation")}});document.addEventListener("keydown",e=>{if(e.key==="Escape"&&nav.classList.contains("open")){nav.classList.remove("open");menu.setAttribute("aria-expanded","false");menu.setAttribute("aria-label","Open navigation");menu.focus()}})})();
 </script>
 </body></html>
