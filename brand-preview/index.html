@@ -13,6 +13,18 @@
 header{height:82px;padding:0 6.5vw;display:flex;align-items:center;justify-content:space-between;background:rgba(240,236,227,.97);position:sticky;top:0;z-index:30;border-bottom:1px solid #29251F18}
 .brand{display:flex;align-items:center;gap:13px}.monogram{width:36px;height:36px;border:1px solid var(--gold);display:grid;place-items:center;color:var(--gold);font:23px var(--serif);position:relative}.monogram:after{content:"";position:absolute;inset:4px;border:1px solid #B5A08055}.brandword{font-size:14px;letter-spacing:.34em;font-weight:500}.brandword small{display:block;font-size:7px;letter-spacing:.34em;color:#777064;margin-top:5px}
 nav{display:flex;align-items:center;gap:31px}nav a{font-size:9px;letter-spacing:.17em;text-transform:uppercase;color:#625D53;transition:color .25s}nav a:hover{color:var(--gold)}.navcta{border:1px solid #B5A08088;padding:13px 17px}.menu{display:none;background:none;border:0;font-size:23px;color:var(--ink)}
+.hero{isolation:isolate;overflow:hidden}
+.hero-slides{position:absolute;inset:0;z-index:-1;background:#34342f}
+.hero-slide{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 52%;opacity:0;transform:scale(1.035);transition:opacity 1.15s ease,transform 7s ease}
+.hero-slide.active{opacity:1;transform:scale(1)}
+.hero-controls{position:absolute;right:6.5vw;bottom:48px;z-index:3;display:flex;align-items:center;gap:15px}
+.hero-arrow{width:36px;height:36px;border:1px solid #D5CABB99;background:#29251F55;color:#F0ECE3;font:24px/1 var(--serif);cursor:pointer;transition:background .25s,border-color .25s}
+.hero-arrow:hover,.hero-arrow:focus-visible{background:#29251F;border-color:#B5A080;outline:none}
+.hero-dots{display:flex;align-items:center;gap:8px}
+.hero-dot{width:7px;height:7px;padding:0;border:1px solid #F0ECE3;background:transparent;border-radius:50%;cursor:pointer;transition:all .25s}
+.hero-dot.active{width:22px;border-radius:8px;background:#B5A080;border-color:#B5A080}
+@media(max-width:650px){.hero{min-height:640px}.hero-content{padding:0 7vw 14vh}.hero-controls{right:7vw;bottom:25px}.scrollnote{right:auto;left:7vw;bottom:34px;writing-mode:horizontal-tb}.scrollnote:after{height:1px;width:35px;border-left:0;border-top:1px solid var(--gold);margin:0 0 3px 10px}.hero-arrow{width:32px;height:32px}}
+@media(prefers-reduced-motion:reduce){.hero-slide{transition:none;transform:none}}
 .hero{height:min(790px,calc(100svh - 110px));min-height:610px;position:relative;background:#34342f url('https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=2400&q=90') center 52%/cover;display:flex;align-items:flex-end;color:#fff}
 .hero:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#11120fc2 0%,#11120f70 42%,transparent 85%),linear-gradient(0deg,#11120f65,transparent 45%)}
 .hero-content{position:relative;padding:0 9vw 9vh;max-width:920px}.eyebrow{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:#D5CABB;font-weight:500}.hero h1{font:clamp(58px,8.2vw,116px)/.96 var(--serif);font-weight:400;letter-spacing:-.025em;margin:25px 0 20px;max-width:800px}.hero p{font-size:13px;line-height:2;max-width:440px;color:#e2ded5}.actions{display:flex;gap:13px;flex-wrap:wrap;margin-top:32px}.btn{display:inline-flex;align-items:center;justify-content:center;padding:16px 23px;font-size:9px;letter-spacing:.19em;text-transform:uppercase;border:1px solid #B5A080;transition:.3s}.btn.gold{background:var(--ink);color:var(--paper);border-color:var(--ink)}.hero .btn.gold{background:var(--paper);color:var(--ink);border-color:var(--paper)}.btn.outline{color:white;border-color:#ffffff80}.btn:hover{background:#f1eee7;color:#29251F;border-color:#f1eee7}
@@ -36,7 +48,14 @@ footer{background:#29251F;color:#F8F5EE;padding:70px 8vw 27px}.footer-top{displa
 <nav><a href="#story">Our world</a><a href="#divisions">Our divisions</a><a href="#collection">Inspiration</a><a href="#showroom">Showroom</a><a class="navcta" href="#contact">Enquire</a></nav>
 </header>
 <main id="home">
-<section class="hero"><div class="hero-content"><div class="eyebrow">A new perspective on living</div><h1>The art of<br>living beautifully.</h1><p>Spaces shaped with intention. Objects chosen with care. A considered world where architecture, interiors and exceptional furniture come together.</p><div class="actions"><a class="btn gold" href="#story">Discover Vastora</a><a class="btn outline" href="#collection">Explore the collection</a></div></div><div class="scrollnote">Scroll to discover</div></section>
+<section class="hero" aria-label="Vastora featured spaces">
+<div class="hero-slides" aria-hidden="true">
+<img class="hero-slide active" src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=2400&q=90" alt="" fetchpriority="high">
+<img class="hero-slide" src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2400&q=90" alt="" loading="lazy">
+<img class="hero-slide" src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=2400&q=90" alt="" loading="lazy">
+<img class="hero-slide" src="https://images.unsplash.com/photo-1600607687644-c7171b42498f?auto=format&fit=crop&w=2400&q=90" alt="" loading="lazy">
+</div>
+<div class="hero-content"><div class="eyebrow">A new perspective on living</div><h1>The art of<br>living beautifully.</h1><p>Spaces shaped with intention. Objects chosen with care. A considered world where architecture, interiors and exceptional furniture come together.</p><div class="actions"><a class="btn gold" href="#story">Discover Vastora</a><a class="btn outline" href="#collection">Explore the collection</a></div></div><div class="hero-controls" aria-label="Hero slideshow controls"><button class="hero-arrow" type="button" data-hero-prev aria-label="Previous image">‹</button><div class="hero-dots"><button class="hero-dot active" type="button" aria-label="Show slide 1" aria-current="true"></button><button class="hero-dot" type="button" aria-label="Show slide 2"></button><button class="hero-dot" type="button" aria-label="Show slide 3"></button><button class="hero-dot" type="button" aria-label="Show slide 4"></button></div><button class="hero-arrow" type="button" data-hero-next aria-label="Next image">›</button></div><div class="scrollnote">Scroll to discover</div></section>
 <section class="intro" id="story"><div class="intro-image" role="img" aria-label="Sculptural contemporary living space"></div><div class="intro-copy"><div class="eyebrow">The Vastora philosophy</div><h2>Beyond beautiful spaces. A more considered way of living.</h2><p>Vastora brings together the worlds of interior design, architecture, luxury furniture and craftsmanship. Each detail is an opportunity to create something enduring — thoughtful in form, exceptional in material, and personal in feeling.</p><p>From the first architectural line to the final furnishing, we approach every space as a complete expression of how life should feel.</p><a class="textlink" href="#divisions">Discover our world <span>↗</span></a></div></section>
 <section class="manifesto"><div class="eyebrow">Our point of view</div><h2>“Luxury is not simply what you see. It is what you feel, every day.”</h2><p>Considered design · Exceptional detail · Enduring quality</p></section>
 <section class="divisions" id="divisions"><div class="section-head"><div><div class="eyebrow">One vision. Five expressions.</div><h2>The Vastora world.</h2></div><p>Distinct disciplines, connected by one design philosophy — bringing every element of exceptional living into a single, considered experience.</p></div>
@@ -57,4 +76,36 @@ footer{background:#29251F;color:#F8F5EE;padding:70px 8vw 27px}.footer-top{displa
 <section class="journal"><div class="eyebrow">Begin a conversation</div><h2>Make room for better living.</h2><p>Whether you are imagining a new home, shaping a hospitality space or searching for a singular piece, we would be delighted to hear what you have in mind.</p><a class="btn gold" href="mailto:hello@vastoraliving.com">Enquire with Vastora</a></section>
 </main>
 <footer id="contact"><div class="footer-top"><div class="footer-brand"><a class="brand" href="#home"><span class="monogram">V</span><span class="brandword">VASTORA<small>THE ART OF BETTER LIVING</small></span></a><p>Designed around living.</p></div><div class="footer-links"><div><b>Explore</b><a href="#story">Our philosophy</a><a href="#divisions">Our divisions</a><a href="#collection">Inspiration</a></div><div><b>Connect</b><a href="mailto:hello@vastoraliving.com">Email Vastora</a><a href="#showroom">Showroom</a><a href="#home">Back to top ↑</a></div></div></div><div class="copyright"><span>© 2026 VASTORA. ALL RIGHTS RESERVED.</span><span>THE ART OF BETTER LIVING.</span></div></footer>
+<script>
+(()=>{
+ const hero=document.querySelector('.hero');
+ if(!hero)return;
+ const slides=[...hero.querySelectorAll('.hero-slide')];
+ const dots=[...hero.querySelectorAll('.hero-dot')];
+ const prev=hero.querySelector('[data-hero-prev]');
+ const next=hero.querySelector('[data-hero-next]');
+ if(!slides.length)return;
+ let current=0,timer=null;
+ const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ function show(index){
+   current=(index+slides.length)%slides.length;
+   slides.forEach((s,i)=>s.classList.toggle('active',i===current));
+   dots.forEach((d,i)=>{d.classList.toggle('active',i===current);if(i===current)d.setAttribute('aria-current','true');else d.removeAttribute('aria-current')});
+ }
+ function stop(){if(timer){clearInterval(timer);timer=null}}
+ function start(){stop();if(!reduced&&!document.hidden)timer=setInterval(()=>show(current+1),6000)}
+ prev.addEventListener('click',()=>{show(current-1);start()});
+ next.addEventListener('click',()=>{show(current+1);start()});
+ dots.forEach((d,i)=>d.addEventListener('click',()=>{show(i);start()}));
+ hero.addEventListener('mouseenter',stop);
+ hero.addEventListener('mouseleave',start);
+ hero.addEventListener('focusin',stop);
+ hero.addEventListener('focusout',start);
+ document.addEventListener('visibilitychange',()=>document.hidden?stop():start());
+ let touchX=0;
+ hero.addEventListener('touchstart',e=>{touchX=e.changedTouches[0].clientX},{passive:true});
+ hero.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-touchX;if(Math.abs(dx)>45){show(current+(dx<0?1:-1));start()}},{passive:true});
+ start();
+})();
+</script>
 </body></html>
